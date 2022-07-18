@@ -1,19 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
-
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
+        <title>{% block title %}Sortir.com{% endblock %}</title>
+        <meta name="viewport"
+              content="width=device-width, user-scalable=yes, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     </head>
     <body>
+    <header>
+        <h1><a href="{{ path('main_home') }}"><img src="{{ asset('assets/img/logo.png') }}" alt="sortir.com"></a></h1>
+
+        <nav>
+            <ul>
+                {% if is_granted("ROLE_ADMIN") %}
+                <li><a href="#" title="">Villes</a></li>
+                <li><a href="#" title="">Campus</a></li>
+                {% endif %}
+                <li><a href="{{ path('main_home') }}" title="">Accueil</a></li>
+                <li><a href="#" title="">Mon Profil</a></li>
+                <li><a href="#" title="">Se déconnecter</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
         {% block body %}{% endblock %}
+    </main>
+    <footer>
+        <div>&copy; {{ "now"|date("Y") }} Sortir.com</div>
+    </footer>
+
+
     </body>
 </html>

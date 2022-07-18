@@ -1,0 +1,42 @@
+header {
+    display: flex;
+}
+
+body {
+    background: #191f33;
+    background-attachment: fixed;
+    color: #EEE;
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #BC956B;
+}
+
+
+body > .container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header img {
+    height: 280px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    padding-left: 0;
+    justify-content: flex-end;
+}
+
+nav li {
+    margin-right: 1rem;
+}
+
