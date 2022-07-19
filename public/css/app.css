@@ -29,14 +29,22 @@ header img {
     height: 280px;
 }
 
+nav {
+    float: right;
+}
+
 nav ul {
     display: flex;
     list-style: none;
     padding-left: 0;
     justify-content: flex-end;
+
 }
 
 nav li {
     margin-right: 1rem;
 }
 
+footer {
+    text-align: center;
+}
