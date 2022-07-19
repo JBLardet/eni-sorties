@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SortieController extends AbstractController
 {
     /**
-     * @Route("s/liste", name="sortie_liste", methods={"GET"})
+     * @Route("", name="app_sortie_index", methods={"GET"})
      */
     public function liste(SortieRepository $sortieRepository): Response
     {

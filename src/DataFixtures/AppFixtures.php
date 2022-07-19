@@ -6,6 +6,7 @@ use App\Entity\Campus;
 use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
+use App\Entity\User;
 use App\Entity\Ville;
 use App\Repository\CampusRepository;
 use App\Repository\EtatRepository;
@@ -14,28 +15,34 @@ use App\Repository\UserRepository;
 use App\Repository\VilleRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     private ObjectManager $manager;
+    
+
     private VilleRepository $villeRepo;
     private LieuRepository $lieuRepository;
     private EtatRepository $etatRepository;
     private CampusRepository $campusRepository;
     private UserRepository $userRepository;
+    private UserPasswordHasherInterface $hasher;
 
     public function __construct(
                                     VilleRepository $villeRepo,
                                     LieuRepository $lieuRepository,
                                     EtatRepository $etatRepository,
                                     CampusRepository $campusRepository,
-                                    UserRepository $userRepository)
+                                    UserRepository $userRepository,
+                                    userPasswordHasherInterface $hasher)
     {
         $this->villeRepo = $villeRepo;
         $this->lieuRepository = $lieuRepository;
         $this->etatRepository = $etatRepository;
         $this->campusRepository = $campusRepository;
         $this->userRepository = $userRepository;
+        $this->hasher = $hasher;
     }
 
     public function load(ObjectManager $manager): void
@@ -45,6 +52,7 @@ class AppFixtures extends Fixture
         $this->addVilles();
         $this->addLieux();
         $this->addCampus();
+        $this->addUser();
         //$this->addSorties();
     }
 
@@ -141,6 +149,29 @@ class AppFixtures extends Fixture
         $this->manager->flush();
     }
 
+   public function addUser(){
+
+         for ($i = 0; $i < 10; $i++) {
+            $user = new User();
+            $user
+                ->setPseudo('pseudo '.$i)
+                ->setName('Nom'.$i)
+                ->setFirstName('Prénom'.$i)
+                ->setPhone('01 23 45 67 89')
+                ->setEmail("Nom$i@mail.com");
+            $psw = $this->hasher->hashPassword($user,"123456");
+            $user
+                ->setPassword($psw)
+                ->setActive('1')
+                ->setRoles(["ROLE_USER"]);
+
+            $this->manager->persist($user);
+            }
+
+        $this->manager->flush();
+
+        }
+        
     public function addSorties(){
 
 
@@ -168,5 +199,3 @@ class AppFixtures extends Fixture
 
 
 }
-
-
