@@ -159,11 +159,11 @@ class AppFixtures extends Fixture
                 ->setFirstName('Prénom'.$i)
                 ->setPhone('01 23 45 67 89')
                 ->setEmail("Nom$i@mail.com");
-            $psw = $this->hasher->hashPassword($user,"123456");
+            $psw = $this->hasher->hashPassword($user,'123456');
             $user
                 ->setPassword($psw)
                 ->setActive('1')
-                ->setRoles(["ROLE_USER"]);
+                ->setRoles(['ROLE_USER']);
 
             $this->manager->persist($user);
             }
