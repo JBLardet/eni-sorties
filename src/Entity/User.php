@@ -48,25 +48,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=80)
      */
-    private $name;
+    private $nom;
 
     /**
-     * @ORM\Column(type="string", length=80)
+     * @ORM\Column(name="prenom", type="string", length=80)
      */
-    private $firstname;
+    private $prenom;
 
     /**
-     * @ORM\Column(type="string", length=20, nullable=true)
+     * @ORM\Column(name="tel", type="string", length=20, nullable=true)
      */
-    private $phone;
+    private $tel;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(name="actif", type="boolean", nullable=true)
      */
-    private $active;
+    private $actif;
 
     /**
-     * @ORM\ManyToOne(targetEntity=campus::class, inversedBy="users")
+     * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      */
     private $campus;
@@ -184,50 +184,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getName(): ?string
+    public function getNom(): ?string
     {
-        return $this->name;
+        return $this->nom;
     }
 
-    public function setName(string $name): self
+    public function setNom(string $nom): self
     {
-        $this->name = $name;
+        $this->nom = $nom;
 
         return $this;
     }
 
-    public function getFirstname(): ?string
+    public function getPrenom(): ?string
     {
-        return $this->firstname;
+        return $this->prenom;
     }
 
-    public function setFirstname(string $firstname): self
+    public function setPrenom(string $prenom): self
     {
-        $this->firstname = $firstname;
+        $this->prenom = $prenom;
 
         return $this;
     }
 
-    public function getPhone(): ?string
+    public function getTel(): ?string
     {
-        return $this->phone;
+        return $this->tel;
     }
 
-    public function setPhone(?string $phone): self
+    public function setTel(?string $tel): self
     {
-        $this->phone = $phone;
+        $this->tel = $tel;
 
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function isActif(): ?bool
     {
-        return $this->active;
+        return $this->actif;
     }
 
-    public function setActive(?bool $active): self
+    public function setActif(?bool $actif): self
     {
-        $this->active = $active;
+        $this->actif = $actif;
 
         return $this;
     }
