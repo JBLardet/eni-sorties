@@ -5,6 +5,14 @@
 {% block body %}
     <h1>Sortie index</h1>
 
+    <div>
+        {{ form_start(RechercheForm) }}
+        {{ form_widget(RechercheForm) }}
+
+        <button type="submit" class="btn">Rechercher</button>
+        {{ form_end(RechercheForm) }}
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -40,6 +48,8 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <br><br>
 
     <a href="{{ path('app_sortie_new') }}">Create new</a>
 {% endblock %}

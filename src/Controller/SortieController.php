@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Sortie;
+use App\Form\RechercheFormType;
 use App\Form\SortieType;
 use App\Repository\SortieRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,14 +15,26 @@ use Symfony\Component\Routing\Annotation\Route;
 class SortieController extends AbstractController
 {
     /**
-     * @Route("/", name="sorties_liste", methods={"GET"})
+     * @Route("/", name="sorties_liste", methods={"GET", "POST"})
      */
-    public function liste(SortieRepository $sortieRepository): Response
+    public function liste(SortieRepository $sortieRepository, Request $request): Response
     {
+        $form = $this->createForm(RechercheFormType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $rechercheModel = $form->getData();
+
+            return $this->render('sortie/index.html.twig', [
+
+            ]);
+        }
         return $this->render('sortie/index.html.twig', [
+            'RechercheForm' => $form->createView(),
             'sorties' => $sortieRepository->findAll(),
         ]);
     }
+
+
 
     /**
      * @Route("/NouvelleSortie", name="app_sortie_new", methods={"GET", "POST"})
