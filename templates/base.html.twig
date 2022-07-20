@@ -10,7 +10,7 @@
     </head>
     <body>
     <header>
-        <h1><a href="{{ path('main_home') }}"><img src="{{ asset('assets/img/logo.png') }}" alt="sortir.com"></a></h1>
+        <h1><a href="{{ path('sorties_liste') }}"><img src="{{ asset('assets/img/logo.png') }}" alt="sortir.com"></a></h1>
 
         <nav>
             <ul>
@@ -18,10 +18,13 @@
                 <li><a href="#" title="">Villes</a></li>
                 <li><a href="#" title="">Campus</a></li>
                 {% endif %}
-                <li><a href="{{ path('main_home') }}" title="">Accueil</a></li>
-                <li><a href="#" title="">Mon Profil</a></li>
+
+
                 {% if app.user %}
-                <li><a href="{{path('app_logout')}}" title="">Se déconnecter</a></li>
+
+                    <li><a href="{{ path('sorties_liste') }}" title="">Accueil</a></li>
+                    <li><a href="#" title="">Mon Profil</a></li>
+                    <li><a href="{{path('app_logout')}}" title="">Se déconnecter</a></li>
                 {% endif %}
             </ul>
         </nav>

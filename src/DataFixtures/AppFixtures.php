@@ -15,6 +15,8 @@ use App\Repository\UserRepository;
 use App\Repository\VilleRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+use Faker\Generator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
@@ -28,6 +30,7 @@ class AppFixtures extends Fixture
     private CampusRepository $campusRepository;
     private UserRepository $userRepository;
     private UserPasswordHasherInterface $hasher;
+    private Generator $generator;
 
     public function __construct(
                                     VilleRepository $villeRepo,
@@ -42,6 +45,7 @@ class AppFixtures extends Fixture
         $this->etatRepository = $etatRepository;
         $this->campusRepository = $campusRepository;
         $this->userRepository = $userRepository;
+        $this->generator = Factory::create("fr_FR");
         $this->hasher = $hasher;
     }
 
@@ -53,7 +57,7 @@ class AppFixtures extends Fixture
         $this->addLieux();
         $this->addCampus();
         $this->addUser();
-        //$this->addSorties();
+        $this->addSorties();
     }
 
     public function addEtats(){
@@ -138,10 +142,10 @@ class AppFixtures extends Fixture
     {
         $listeCampus = ['NANTES', 'RENNES', 'QUIMPER', 'NIORT'];
 
-        foreach ($listeCampus as $campus) {
+        foreach ($listeCampus as $c) {
             $campus = new Campus();
 
-            $campus->setLibelle($campus);
+            $campus->setNom($c);
             $this->manager->persist($campus);
 
         }
@@ -150,6 +154,8 @@ class AppFixtures extends Fixture
     }
 
    public function addUser(){
+
+       $campus = $this->campusRepository->findAll();
 
          for ($i = 0; $i < 10; $i++) {
             $user = new User();
@@ -163,7 +169,8 @@ class AppFixtures extends Fixture
             $user
                 ->setPassword($psw)
                 ->setActive('1')
-                ->setRoles(['ROLE_USER']);
+                ->setRoles(["ROLE_USER"])
+                ->setCampus($this->generator->randomElement($campus));
 
             $this->manager->persist($user);
             }
@@ -175,25 +182,36 @@ class AppFixtures extends Fixture
     public function addSorties(){
 
 
-        $campus = $this->
+        $campus = $this->campusRepository->findAll();
         $lieux = $this->lieuRepository->findAll();
         $etats = $this->etatRepository->findAll();
-
-        $sortie = new Sortie();
-        $sortie->setNom('Cinéma');
-        $sortie->setDateHeureDebut();
-        $sortie->setDuree();
-        $sortie->setDateLimiteInscription();
-        $sortie->setInfosSortie();
-        $sortie->setNbInscriptionsMax();
-        $sortie->setEtat();
-        $sortie->setLieu();
-        $sortie->setOrganisateur();
-        $sortie->setCampus();
+        $users = $this->userRepository->findAll();
 
 
-        $this->manager->persist($sortie);
 
+        for ($i=0; $i<10; $i++) {
+
+            foreach($etats as $etat) {
+                if ($etat->getLibelle = 'OUVERTE') {
+                    $etatOuverte = $etat;
+                }
+            }
+            $sortie = new Sortie();
+            $sortie->setNom('sortie' . $i);
+            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
+            $sortie->setDuree(120);
+            $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('+ 4 days', '+ 6 days'));
+            $sortie->setInfosSortie("La sortie de l'année!");
+            $sortie->setNbInscriptionsMax($this->generator->numberBetween(5, 20));
+            $sortie->setEtat($etatOuverte);
+            $sortie->setLieu($this->generator->randomElement($lieux));
+            $sortie->setOrganisateur($this->generator->randomElement($users));
+            $sortie->setCampus($this->generator->randomElement($campus));
+
+
+            $this->manager->persist($sortie);
+
+        }
         $this->manager->flush();
     }
 
