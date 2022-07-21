@@ -51,17 +51,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $nom;
 
     /**
-     * @ORM\Column(name="prenom", type="string", length=80)
+     * @ORM\Column(type="string", length=80)
      */
     private $prenom;
 
     /**
-     * @ORM\Column(name="tel", type="string", length=20, nullable=true)
+     * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $tel;
 
     /**
-     * @ORM\Column(name="actif", type="boolean", nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      */
     private $actif;
 

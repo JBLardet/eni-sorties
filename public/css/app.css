@@ -46,5 +46,19 @@ nav li {
 }
 
 footer {
+    margin-top: 2em;
     text-align: center;
+}
+input {
+    display: block;
+    width: 20%;
+}
+checkbox{
+    display:inline;
+}
+label{
+    display:flex;
+}
+form{
+    padding-left:5em;
 }

@@ -17,6 +17,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
+
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
@@ -161,9 +162,9 @@ class AppFixtures extends Fixture
             $user = new User();
             $user
                 ->setPseudo('pseudo'.$i)
-                ->setNom($this->generator->lastName)
-                ->setPrenom($this->generator->firstName)
-                ->setTel($this->generator->phoneNumber)
+                ->setNom('Nom'.$i)
+                ->setPrenom('Prénom'.$i)
+                ->setTel('01 23 45 67 89')
                 ->setEmail("Nom$i@mail.com");
             $psw = $this->hasher->hashPassword($user,'123456');
             $user
