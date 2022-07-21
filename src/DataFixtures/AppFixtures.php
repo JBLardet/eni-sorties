@@ -6,6 +6,7 @@ use App\Entity\Campus;
 use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
+use App\Entity\User;
 use App\Entity\Ville;
 use App\Repository\CampusRepository;
 use App\Repository\EtatRepository;
@@ -14,28 +15,38 @@ use App\Repository\UserRepository;
 use App\Repository\VilleRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+use Faker\Generator;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     private ObjectManager $manager;
+    
+
     private VilleRepository $villeRepo;
     private LieuRepository $lieuRepository;
     private EtatRepository $etatRepository;
     private CampusRepository $campusRepository;
     private UserRepository $userRepository;
+    private UserPasswordHasherInterface $hasher;
+    private Generator $generator;
 
     public function __construct(
                                     VilleRepository $villeRepo,
                                     LieuRepository $lieuRepository,
                                     EtatRepository $etatRepository,
                                     CampusRepository $campusRepository,
-                                    UserRepository $userRepository)
+                                    UserRepository $userRepository,
+                                    userPasswordHasherInterface $hasher)
     {
         $this->villeRepo = $villeRepo;
         $this->lieuRepository = $lieuRepository;
         $this->etatRepository = $etatRepository;
         $this->campusRepository = $campusRepository;
         $this->userRepository = $userRepository;
+        $this->generator = Factory::create("fr_FR");
+        $this->hasher = $hasher;
     }
 
     public function load(ObjectManager $manager): void
@@ -45,7 +56,8 @@ class AppFixtures extends Fixture
         $this->addVilles();
         $this->addLieux();
         $this->addCampus();
-        //$this->addSorties();
+        $this->addUser();
+        $this->addSorties();
     }
 
     public function addEtats(){
@@ -64,6 +76,11 @@ class AppFixtures extends Fixture
 
     public function addVilles(){
 
+
+            $ville = new Ville();
+            $ville->setNom('NANTES');
+            $ville->setCodePostal(44000);
+            $this->manager->persist($ville);
 
             $ville = new Ville();
             $ville->setNom('NIORT');
@@ -128,12 +145,14 @@ class AppFixtures extends Fixture
 
     private function addCampus()
     {
+        //Todo potentiel : Remplacer par la bonne liste des campus si on les trouve (ex: SAINT HERBLAIN)
+        //Sinon préciser la ville et le campus fait doublon sur les sorties
         $listeCampus = ['NANTES', 'RENNES', 'QUIMPER', 'NIORT'];
 
-        foreach ($listeCampus as $campus) {
+        foreach ($listeCampus as $c) {
             $campus = new Campus();
 
-            $campus->setLibelle($campus);
+            $campus->setNom($c);
             $this->manager->persist($campus);
 
         }
@@ -141,32 +160,67 @@ class AppFixtures extends Fixture
         $this->manager->flush();
     }
 
+   public function addUser(){
+
+       $campus = $this->campusRepository->findAll();
+
+         for ($i = 0; $i < 10; $i++) {
+            $user = new User();
+            $user
+                ->setPseudo('pseudo '.$i)
+                ->setNom('Nom'.$i)
+                ->setPrenom('Prénom'.$i)
+                ->setTel('01 23 45 67 89')
+                ->setEmail("Nom$i@mail.com");
+            $psw = $this->hasher->hashPassword($user,'123456');
+            $user
+                ->setPassword($psw)
+                ->setActif('1')
+                ->setRoles(["ROLE_USER"])
+                ->setCampus($this->generator->randomElement($campus));
+
+            $this->manager->persist($user);
+            }
+
+        $this->manager->flush();
+
+        }
+        
     public function addSorties(){
 
 
-        $campus = $this->
+        $campus = $this->campusRepository->findAll();
         $lieux = $this->lieuRepository->findAll();
         $etats = $this->etatRepository->findAll();
-
-        $sortie = new Sortie();
-        $sortie->setNom('Cinéma');
-        $sortie->setDateHeureDebut();
-        $sortie->setDuree();
-        $sortie->setDateLimiteInscription();
-        $sortie->setInfosSortie();
-        $sortie->setNbInscriptionsMax();
-        $sortie->setEtat();
-        $sortie->setLieu();
-        $sortie->setOrganisateur();
-        $sortie->setCampus();
+        $users = $this->userRepository->findAll();
 
 
-        $this->manager->persist($sortie);
 
+        for ($i=0; $i<10; $i++) {
+
+            foreach($etats as $etat) {
+                if ($etat->getLibelle = 'OUVERTE') {
+                    $etatOuverte = $etat;
+                }
+            }
+            $sortie = new Sortie();
+            $sortie->setNom('sortie' . $i);
+            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
+            $sortie->setDuree(120);
+            $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('+ 4 days', '+ 6 days'));
+            $sortie->setInfosSortie("La sortie de l'année!");
+            $sortie->setNbInscriptionsMax($this->generator->numberBetween(5, 20));
+            $sortie->setEtat($etatOuverte);
+            $sortie->setLieu($this->generator->randomElement($lieux));
+            $sortie->setOrganisateur($this->generator->randomElement($users));
+            $sortie->setCampus($this->generator->randomElement($campus));
+
+
+            $this->manager->persist($sortie);
+
+        }
         $this->manager->flush();
     }
 
 
 }
-
-
