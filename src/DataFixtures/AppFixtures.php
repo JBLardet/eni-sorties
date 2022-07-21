@@ -160,15 +160,15 @@ class AppFixtures extends Fixture
          for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user
-                ->setPseudo('pseudo '.$i)
-                ->setName('Nom'.$i)
-                ->setFirstName('Prénom'.$i)
-                ->setPhone('01 23 45 67 89')
+                ->setPseudo('pseudo'.$i)
+                ->setNom($this->generator->lastName)
+                ->setPrenom($this->generator->firstName)
+                ->setTel($this->generator->phoneNumber)
                 ->setEmail("Nom$i@mail.com");
             $psw = $this->hasher->hashPassword($user,'123456');
             $user
                 ->setPassword($psw)
-                ->setActive('1')
+                ->setActif('1')
                 ->setRoles(["ROLE_USER"])
                 ->setCampus($this->generator->randomElement($campus));
 
@@ -187,15 +187,15 @@ class AppFixtures extends Fixture
         $etats = $this->etatRepository->findAll();
         $users = $this->userRepository->findAll();
 
+        foreach($etats as $etat) {
 
+            if ($etat->getLibelle() == 'OUVERTE') {
+                $etatOuverte = $etat;
+            }
+        }
 
         for ($i=0; $i<10; $i++) {
 
-            foreach($etats as $etat) {
-                if ($etat->getLibelle = 'OUVERTE') {
-                    $etatOuverte = $etat;
-                }
-            }
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
             $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
