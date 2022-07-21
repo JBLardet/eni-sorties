@@ -1,5 +1,6 @@
 ## ne pas télécharger
 /.idea/
+/public/.htaccess
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -19,4 +20,5 @@
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
 /phpunit.xml
+
 ###< symfony/phpunit-bridge ###
