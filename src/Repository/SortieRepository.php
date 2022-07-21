@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Campus;
 use App\Entity\Sortie;
+use App\Entity\User;
+use App\Form\model\RechercheFormModel;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -63,4 +66,71 @@ class SortieRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    /**
+     * @param RechercheFormModel $rechercheFormModel
+     * @return Sortie[]
+     */
+    public function findByFormulaire(RechercheFormModel $rechercheFormModel, User $user)
+    {
+
+        $queryBuilder = $this->createQueryBuilder('s');
+        if($rechercheFormModel->getCampus()) {
+            $queryBuilder->andWhere('s.campus = :campus');
+            $queryBuilder->setParameter('campus', $rechercheFormModel->getCampus());
+        }
+        if($rechercheFormModel->getRechercheParNom()) {
+            $queryBuilder->andWhere('s.nom LIKE :value');
+            $queryBuilder->setParameter('value', '%'.$rechercheFormModel->getRechercheParNom().'%');
+
+        }
+        if ($rechercheFormModel->getDateMin() != null) {
+            $queryBuilder->andWhere('s.dateHeureDebut > :dateMin');
+            $queryBuilder->setParameter('dateMin', $rechercheFormModel->getDateMin());
+
+        }
+        if ($rechercheFormModel->getDateMax()!= null) {
+            $dateMax = $rechercheFormModel->getDateMax();
+            $dateMax = $dateMax->modify('+ 1 day');
+            $queryBuilder->andWhere('s.dateHeureDebut < :dateMax');
+            $queryBuilder->setParameter('dateMax', $dateMax);
+        }
+       if($rechercheFormModel->getOrganisateur() != null) {
+            $queryBuilder->andWhere('s.organisateur = :user');
+            $queryBuilder->setParameter('user', $user);
+        }
+
+        if($rechercheFormModel->getParticipant() != null) {
+            $queryBuilder->andWhere(':user MEMBER OF s.participants');
+            $queryBuilder->setParameter('user', $user);
+        }
+
+
+
+
+        $query = $queryBuilder->getQuery();
+        $result = $query->getResult();
+
+        return $result;
+
+    }
+
+    /**
+     * @param Campus $campus
+     * @return Sortie[]
+     */
+    public function findByCampus(Campus $campus)
+    {
+
+        $queryBuilder = $this->createQueryBuilder('s');
+        $queryBuilder->andWhere('s.campus = :campus');
+        $queryBuilder->setParameter('campus', $campus);
+
+        $query = $queryBuilder->getQuery();
+        $result = $query->getResult();
+
+        return $result;
+
+    }
+
 }

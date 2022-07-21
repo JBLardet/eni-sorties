@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Campus;
 use App\Entity\Sortie;
+use App\Form\model\RechercheFormModel;
 use App\Form\RechercheFormType;
 use App\Form\SortieType;
 use App\Repository\SortieRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,27 +20,34 @@ class SortieController extends AbstractController
     /**
      * @Route("/", name="sorties_liste", methods={"GET", "POST"})
      */
-    public function liste(SortieRepository $sortieRepository, Request $request): Response
+    public function liste(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, Request $request): Response
     {
-        $form = $this->createForm(RechercheFormType::class);
+        $user = $this->getUser();
+        $campus = $this->getUser()->getCampus();
+        $rechercheModel = new RechercheFormModel();
+        $rechercheModel->setCampus($campus);
+
+        dump($rechercheModel);
+
+        $form = $this->createForm(RechercheFormType::class, $rechercheModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $rechercheModel = $form->getData();
-
+            dump($rechercheModel);
             return $this->render('sortie/index.html.twig', [
-
+                'RechercheForm' => $form->createView(),
+                'sorties' => $sortieRepository->findByFormulaire($rechercheModel, $user),
             ]);
         }
         return $this->render('sortie/index.html.twig', [
             'RechercheForm' => $form->createView(),
-            'sorties' => $sortieRepository->findAll(),
+            'sorties' => $sortieRepository->findbyCampus($campus),
         ]);
     }
 
 
 
     /**
-     * @Route("/NouvelleSortie", name="app_sortie_new", methods={"GET", "POST"})
+     * @Route("/NouvelleSortie", name="sortie_new", methods={"GET", "POST"})
      */
     public function new(Request $request, SortieRepository $sortieRepository): Response
     {
@@ -48,7 +58,7 @@ class SortieController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $sortieRepository->add($sortie, true);
 
-            return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('sortie/new.html.twig', [
