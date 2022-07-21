@@ -46,6 +46,7 @@ nav li {
 }
 
 footer {
+    margin-top: 2em;
     text-align: center;
 }
 
@@ -67,3 +68,17 @@ footer {
 /*    box-shadow: #191f33;*/
 /*    border-radius: 50%;*/
 /*}*/
+
+input {
+    display: block;
+    width: 20%;
+}
+checkbox{
+    display:inline;
+}
+label{
+    display:flex;
+}
+form{
+    padding-left:5em;
+}

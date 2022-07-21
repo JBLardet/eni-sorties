@@ -17,6 +17,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
+
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
@@ -167,7 +168,8 @@ class AppFixtures extends Fixture
          for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user
-                ->setPseudo('pseudo '.$i)
+
+                ->setPseudo('pseudo'.$i)
                 ->setNom('Nom'.$i)
                 ->setPrenom('Prénom'.$i)
                 ->setTel('01 23 45 67 89')
@@ -194,15 +196,15 @@ class AppFixtures extends Fixture
         $etats = $this->etatRepository->findAll();
         $users = $this->userRepository->findAll();
 
+        foreach($etats as $etat) {
 
+            if ($etat->getLibelle() == 'OUVERTE') {
+                $etatOuverte = $etat;
+            }
+        }
 
         for ($i=0; $i<10; $i++) {
 
-            foreach($etats as $etat) {
-                if ($etat->getLibelle = 'OUVERTE') {
-                    $etatOuverte = $etat;
-                }
-            }
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
             $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
