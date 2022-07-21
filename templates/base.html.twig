@@ -21,9 +21,10 @@
 
 
                 {% if app.user %}
+
                     <li><a href="{{ path('sorties_liste') }}" title="">Accueil</a></li>
                     <li><a href="#" title="">Mon Profil</a></li>
-                    <li><a href="#" title="">Se déconnecter</a></li>
+                    <li><a href="{{path('app_logout')}}" title="">Se déconnecter</a></li>
                 {% endif %}
             </ul>
         </nav>
