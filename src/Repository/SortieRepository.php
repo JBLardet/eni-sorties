@@ -108,6 +108,9 @@ class SortieRepository extends ServiceEntityRepository
 
 
 
+
+
+
         $query = $queryBuilder->getQuery();
         $result = $query->getResult();
 
