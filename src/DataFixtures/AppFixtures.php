@@ -78,6 +78,11 @@ class AppFixtures extends Fixture
 
 
             $ville = new Ville();
+            $ville->setNom('NANTES');
+            $ville->setCodePostal(44000);
+            $this->manager->persist($ville);
+
+            $ville = new Ville();
             $ville->setNom('NIORT');
             $ville->setCodePostal(79000);
             $this->manager->persist($ville);
@@ -140,6 +145,8 @@ class AppFixtures extends Fixture
 
     private function addCampus()
     {
+        //Todo potentiel : Remplacer par la bonne liste des campus si on les trouve (ex: SAINT HERBLAIN)
+        //Sinon préciser la ville et le campus fait doublon sur les sorties
         $listeCampus = ['NANTES', 'RENNES', 'QUIMPER', 'NIORT'];
 
         foreach ($listeCampus as $c) {
@@ -161,14 +168,14 @@ class AppFixtures extends Fixture
             $user = new User();
             $user
                 ->setPseudo('pseudo '.$i)
-                ->setName('Nom'.$i)
-                ->setFirstName('Prénom'.$i)
-                ->setPhone('01 23 45 67 89')
+                ->setNom('Nom'.$i)
+                ->setPrenom('Prénom'.$i)
+                ->setTel('01 23 45 67 89')
                 ->setEmail("Nom$i@mail.com");
             $psw = $this->hasher->hashPassword($user,'123456');
             $user
                 ->setPassword($psw)
-                ->setActive('1')
+                ->setActif('1')
                 ->setRoles(["ROLE_USER"])
                 ->setCampus($this->generator->randomElement($campus));
 
