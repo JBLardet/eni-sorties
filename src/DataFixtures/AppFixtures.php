@@ -17,7 +17,6 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
-
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
@@ -161,15 +160,15 @@ class AppFixtures extends Fixture
          for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user
-                ->setPseudo('pseudo'.$i)
-                ->setNom('Nom'.$i)
-                ->setPrenom('Prénom'.$i)
-                ->setTel('01 23 45 67 89')
+                ->setPseudo('pseudo '.$i)
+                ->setName('Nom'.$i)
+                ->setFirstName('Prénom'.$i)
+                ->setPhone('01 23 45 67 89')
                 ->setEmail("Nom$i@mail.com");
             $psw = $this->hasher->hashPassword($user,'123456');
             $user
                 ->setPassword($psw)
-                ->setActif('1')
+                ->setActive('1')
                 ->setRoles(["ROLE_USER"])
                 ->setCampus($this->generator->randomElement($campus));
 
