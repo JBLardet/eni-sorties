@@ -188,15 +188,15 @@ class AppFixtures extends Fixture
         $etats = $this->etatRepository->findAll();
         $users = $this->userRepository->findAll();
 
+        foreach($etats as $etat) {
 
+            if ($etat->getLibelle() == 'OUVERTE') {
+                $etatOuverte = $etat;
+            }
+        }
 
         for ($i=0; $i<10; $i++) {
 
-            foreach($etats as $etat) {
-                if ($etat->getLibelle = 'OUVERTE') {
-                    $etatOuverte = $etat;
-                }
-            }
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
             $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
