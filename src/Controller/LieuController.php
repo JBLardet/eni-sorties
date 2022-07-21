@@ -37,6 +37,8 @@ class LieuController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $lieuRepository->add($lieu, true);
 
+            $this->addFlash('success', 'Ce lieu a été créé ! Tout le monde peut maintenant le
+            sélectionner pour y organiser une sortie.');
             return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);
         }
 

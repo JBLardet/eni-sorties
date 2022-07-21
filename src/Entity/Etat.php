@@ -15,12 +15,12 @@ class Etat
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $libelle;
+    private string $libelle;
 
     public function getId(): ?int
     {

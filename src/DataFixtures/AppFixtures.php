@@ -79,6 +79,11 @@ class AppFixtures extends Fixture
 
 
             $ville = new Ville();
+            $ville->setNom('NANTES');
+            $ville->setCodePostal(44000);
+            $this->manager->persist($ville);
+
+            $ville = new Ville();
             $ville->setNom('NIORT');
             $ville->setCodePostal(79000);
             $this->manager->persist($ville);
@@ -141,6 +146,8 @@ class AppFixtures extends Fixture
 
     private function addCampus()
     {
+        //Todo potentiel : Remplacer par la bonne liste des campus si on les trouve (ex: SAINT HERBLAIN)
+        //Sinon préciser la ville et le campus fait doublon sur les sorties
         $listeCampus = ['NANTES', 'RENNES', 'QUIMPER', 'NIORT'];
 
         foreach ($listeCampus as $c) {
@@ -161,6 +168,7 @@ class AppFixtures extends Fixture
          for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user
+
                 ->setPseudo('pseudo'.$i)
                 ->setNom('Nom'.$i)
                 ->setPrenom('Prénom'.$i)

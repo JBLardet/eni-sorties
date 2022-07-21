@@ -1,5 +1,28 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_row(form.nom) }}
+    {{ form_row(form.dateHeureDebut) }}
+    {{ form_row(form.dateLimiteInscription) }}
+    {{ form_row(form.nbInscriptionsMax) }}
+    {{ form_row(form.duree) }} minutes
+    {# todo: Aligner avec le form_row duree, sûrement en stylisant avec CSS dans un flex-row #}
+    {{ form_row(form.infosSortie) }}
+    {{ form_row(form.campus) }}
+    {{ form_row(form.ville) }}
+    {{ form_row(form.lieu) }}
+        {#  <button class="btnLieu">+</button> #}
+        {# todo: Aligner aussi, et éventuellement remplacer l'image par un vrai bouton #}
+        <a href="{{ path('app_lieu_new') }}"><img src="{{ asset('assets/img/btnLieu.png') }}"
+                                                  height="20px" width="20px" alt="Créer un lieu"></a>
+    {{ form_row(form.rue) }}
+    {{ form_row(form.codePostal) }}
+    {{ form_row(form.latitude) }}
+    {{ form_row(form.longitude) }}
+    {# {{ form_widget(form) }} #}
 
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <button class="btn">{{ button_label|default('Enregistrer') }}</button>
+{# TODO: Set Etat à "EN CREATION" #}
+    <button class="btn" type="submit">{{ button_label|default('Publier la sortie') }}</button>
+{# TODO: Set Etat à "OUVERTE" #}
+    <button class="btn" type="reset">{{ button_label|default('Annuler') }}</button>
+
 {{ form_end(form) }}

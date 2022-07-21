@@ -54,11 +54,14 @@ class SortieController extends AbstractController
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
-
+        dump($sortie);
         if ($form->isSubmitted() && $form->isValid()) {
             $sortieRepository->add($sortie, true);
 
+            $this->addFlash('success', 'Sortie créée !');
             return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
+            //todo: éventuellement, rediriger vers "Modifier la sortie" de la nouvelle sortie ('app_sortie_edit', ['id' => $sortie->getId()]
+
         }
 
         return $this->renderForm('sortie/new.html.twig', [
@@ -88,7 +91,7 @@ class SortieController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $sortieRepository->add($sortie, true);
 
-            return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('sortie/edit.html.twig', [
@@ -106,6 +109,6 @@ class SortieController extends AbstractController
             $sortieRepository->remove($sortie, true);
         }
 
-        return $this->redirectToRoute('app_sortie_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
     }
 }
