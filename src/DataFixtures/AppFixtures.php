@@ -92,6 +92,7 @@ class AppFixtures extends Fixture
             $ville->setCodePostal(35000);
             $this->manager->persist($ville);
 
+
             $this->manager->flush();
     }
 
@@ -194,16 +195,16 @@ class AppFixtures extends Fixture
             }
         }
 
-        for ($i=0; $i<10; $i++) {
+        for ($i=0; $i<50; $i++) {
 
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
-            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
+            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 month'));
             $sortie->setDuree(120);
             $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('+ 4 days', '+ 6 days'));
             $sortie->setInfosSortie("La sortie de l'année!");
             $sortie->setNbInscriptionsMax($this->generator->numberBetween(5, 20));
-            $sortie->setEtat($etatOuverte);
+            $sortie->setEtat($this->generator->randomElement($etats));
             $sortie->setLieu($this->generator->randomElement($lieux));
             $sortie->setOrganisateur($this->generator->randomElement($users));
             $sortie->setCampus($this->generator->randomElement($campus));

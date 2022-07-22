@@ -73,8 +73,13 @@ class SortieRepository extends ServiceEntityRepository
      */
     public function findByFormulaire(RechercheFormModel $rechercheFormModel, User $user)
     {
-
         $queryBuilder = $this->createQueryBuilder('s');
+        $queryBuilder->join('s.campus', 'c');
+        $queryBuilder->join('s.etat', 'e');
+        $queryBuilder->join('s.organisateur', 'o');
+        $queryBuilder->leftJoin('s.participants', 'p')
+            ->addSelect('c', 'e', 'o', 'p');
+
         if($rechercheFormModel->getCampus()) {
             $queryBuilder->andWhere('s.campus = :campus');
             $queryBuilder->setParameter('campus', $rechercheFormModel->getCampus());
@@ -105,10 +110,28 @@ class SortieRepository extends ServiceEntityRepository
             $queryBuilder->setParameter('user', $user);
         }
 
+        if($rechercheFormModel->getNonParticipant() != null) {
+            $queryBuilder->andWhere(':user NOT MEMBER OF s.participants');
+            $queryBuilder->setParameter('user', $user);
+        }
 
+        if($rechercheFormModel->getSortiesPassees() != null) {
+            $queryBuilder->andWhere('e.libelle = :value');
+            $queryBuilder->setParameter('value', 'TERMINEE');
+        }
+        $queryBuilder->orderBy('s.dateHeureDebut', 'ASC');
 
+        $queryBuilder->andWhere('e.libelle != :val');
+        $queryBuilder->setParameter('val', 'HISTORISEE');
 
+//        $queryBuilder->andWhere('s.organisateur = $user and e.libelle = :val1');
+//        $queryBuilder->setParameter('val1', 'EN CREATION');
 
+        //NE FONCTIONNE PAS
+//         if(s.organisateur != $user){
+//            $queryBuilder->andWhere('e.libelle != :v');
+//            $queryBuilder->setParameter('v', 'EN CREATION');
+//        }
 
 
         $query = $queryBuilder->getQuery();
@@ -126,8 +149,17 @@ class SortieRepository extends ServiceEntityRepository
     {
 
         $queryBuilder = $this->createQueryBuilder('s');
+        $queryBuilder->join('s.campus', 'c');
+        $queryBuilder->join('s.etat', 'e');
+        $queryBuilder->join('s.organisateur', 'o');
+        $queryBuilder->leftJoin('s.participants', 'p')
+            ->addSelect('c', 'e', 'o', 'p');
         $queryBuilder->andWhere('s.campus = :campus');
         $queryBuilder->setParameter('campus', $campus);
+        $queryBuilder->orderBy('s.dateHeureDebut', 'ASC');
+        $queryBuilder->andWhere('e.libelle != :val1 and e.libelle != :val2');
+        $queryBuilder->setParameter('val1', 'HISTORISEE');
+        $queryBuilder->setParameter('val2', 'TERMINEE');
 
         $query = $queryBuilder->getQuery();
         $result = $query->getResult();
