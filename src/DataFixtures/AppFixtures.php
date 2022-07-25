@@ -22,7 +22,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private ObjectManager $manager;
-    
+
 
     private VilleRepository $villeRepo;
     private LieuRepository $lieuRepository;
@@ -33,12 +33,12 @@ class AppFixtures extends Fixture
     private Generator $generator;
 
     public function __construct(
-                                    VilleRepository $villeRepo,
-                                    LieuRepository $lieuRepository,
-                                    EtatRepository $etatRepository,
-                                    CampusRepository $campusRepository,
-                                    UserRepository $userRepository,
-                                    userPasswordHasherInterface $hasher)
+        VilleRepository $villeRepo,
+        LieuRepository $lieuRepository,
+        EtatRepository $etatRepository,
+        CampusRepository $campusRepository,
+        UserRepository $userRepository,
+        userPasswordHasherInterface $hasher)
     {
         $this->villeRepo = $villeRepo;
         $this->lieuRepository = $lieuRepository;
@@ -77,22 +77,22 @@ class AppFixtures extends Fixture
     public function addVilles(){
 
 
-            $ville = new Ville();
-            $ville->setNom('NIORT');
-            $ville->setCodePostal(79000);
-            $this->manager->persist($ville);
+        $ville = new Ville();
+        $ville->setNom('NIORT');
+        $ville->setCodePostal(79000);
+        $this->manager->persist($ville);
 
-            $ville = new Ville();
-            $ville->setNom('QUIMPER');
-            $ville->setCodePostal(29000);
-            $this->manager->persist($ville);
+        $ville = new Ville();
+        $ville->setNom('QUIMPER');
+        $ville->setCodePostal(29000);
+        $this->manager->persist($ville);
 
-            $ville = new Ville();
-            $ville->setNom('RENNES');
-            $ville->setCodePostal(35000);
-            $this->manager->persist($ville);
+        $ville = new Ville();
+        $ville->setNom('RENNES');
+        $ville->setCodePostal(35000);
+        $this->manager->persist($ville);
 
-            $this->manager->flush();
+        $this->manager->flush();
     }
 
     public function addLieux(){
@@ -153,32 +153,32 @@ class AppFixtures extends Fixture
         $this->manager->flush();
     }
 
-   public function addUser(){
+    public function addUser(){
 
-       $campus = $this->campusRepository->findAll();
+        $campus = $this->campusRepository->findAll();
 
-         for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user
-                ->setPseudo('pseudo '.$i)
-                ->setName('Nom'.$i)
-                ->setFirstName('Prénom'.$i)
-                ->setPhone('01 23 45 67 89')
+                ->setPseudo('pseudo'.$i)
+                ->setNom($this->generator->lastName)
+                ->setPrenom($this->generator->firstName)
+                ->setTel($this->generator->phoneNumber)
                 ->setEmail("Nom$i@mail.com");
             $psw = $this->hasher->hashPassword($user,'123456');
             $user
                 ->setPassword($psw)
-                ->setActive('1')
+                ->setActif('1')
                 ->setRoles(["ROLE_USER"])
                 ->setCampus($this->generator->randomElement($campus));
 
             $this->manager->persist($user);
-            }
+        }
 
         $this->manager->flush();
 
-        }
-        
+    }
+
     public function addSorties(){
 
 
@@ -187,15 +187,15 @@ class AppFixtures extends Fixture
         $etats = $this->etatRepository->findAll();
         $users = $this->userRepository->findAll();
 
+        foreach($etats as $etat) {
 
+            if ($etat->getLibelle() == 'OUVERTE') {
+                $etatOuverte = $etat;
+            }
+        }
 
         for ($i=0; $i<10; $i++) {
 
-            foreach($etats as $etat) {
-                if ($etat->getLibelle = 'OUVERTE') {
-                    $etatOuverte = $etat;
-                }
-            }
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
             $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
