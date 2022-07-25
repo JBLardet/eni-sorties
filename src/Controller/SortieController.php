@@ -7,6 +7,7 @@ use App\Entity\Sortie;
 use App\Form\model\RechercheFormModel;
 use App\Form\RechercheFormType;
 use App\Form\SortieType;
+use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,13 +50,20 @@ class SortieController extends AbstractController
     /**
      * @Route("/NouvelleSortie", name="sortie_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, SortieRepository $sortieRepository): Response
+    public function new(Request $request, SortieRepository $sortieRepository, EtatRepository $etatRepository): Response
     {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         dump($sortie);
         if ($form->isSubmitted() && $form->isValid()) {
+            $etats = $etatRepository->findAll();
+            foreach ($etats as $etat) {
+                if ($etat->getLibelle() == 'EN CREATION') {
+                    $etatENCREATION = $etat;
+                }}
+            $sortie->setEtat($etatENCREATION);
+            $sortie->setOrganisateur($this->getUser());
             $sortieRepository->add($sortie, true);
 
             $this->addFlash('success', 'Sortie créée !');
