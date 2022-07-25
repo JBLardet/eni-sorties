@@ -13,9 +13,11 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SortieType extends AbstractType
@@ -119,6 +121,12 @@ class SortieType extends AbstractType
                 'attr' => [
                     'placeholder' => 'À débloquer au niveau 2'
                 ]
+            ])
+            ->add('enregistrer', SubmitType::class, [
+                'label' => 'Enregistrer'
+            ])
+            ->add('publier', SubmitType::class, [
+                'label' => 'Publier la sortie'
             ])
 
         ;

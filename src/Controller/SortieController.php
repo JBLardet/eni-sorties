@@ -57,13 +57,29 @@ class SortieController extends AbstractController
         $form->handleRequest($request);
         dump($sortie);
         if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('enregistrer')->isSubmitted())
+                $sortie->setEtat('');
+
+//            $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
+//            $sortieRepository->add($sortie, true);
+//        }
+//        if ($form->get('bouton')->getData() == 'Publier') {
+//            $sortie->setEtat($etatManager->recupererEtats('OUVERTE'));
+//            $sortieRepository->add($sortie, true);
+
+            if ($form->get('publier')->isSubmitted())
+                $sortie->setEtat();
+
+
             $etats = $etatRepository->findAll();
             foreach ($etats as $etat) {
                 if ($etat->getLibelle() == 'EN CREATION') {
                     $etatENCREATION = $etat;
                 }}
-            $sortie->setEtat($etatENCREATION);
+//            $sortie->setEtat($etatENCREATION);
             $sortie->setOrganisateur($this->getUser());
+            $sortie->addParticipant($this->getUser());
             $sortieRepository->add($sortie, true);
 
             $this->addFlash('success', 'Sortie créée !');
