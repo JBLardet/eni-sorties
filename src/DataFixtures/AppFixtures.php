@@ -17,13 +17,12 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
-
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     private ObjectManager $manager;
-    
+
 
     private VilleRepository $villeRepo;
     private LieuRepository $lieuRepository;
@@ -34,12 +33,12 @@ class AppFixtures extends Fixture
     private Generator $generator;
 
     public function __construct(
-                                    VilleRepository $villeRepo,
-                                    LieuRepository $lieuRepository,
-                                    EtatRepository $etatRepository,
-                                    CampusRepository $campusRepository,
-                                    UserRepository $userRepository,
-                                    userPasswordHasherInterface $hasher)
+        VilleRepository $villeRepo,
+        LieuRepository $lieuRepository,
+        EtatRepository $etatRepository,
+        CampusRepository $campusRepository,
+        UserRepository $userRepository,
+        userPasswordHasherInterface $hasher)
     {
         $this->villeRepo = $villeRepo;
         $this->lieuRepository = $lieuRepository;
@@ -78,6 +77,7 @@ class AppFixtures extends Fixture
     public function addVilles(){
 
 
+
             $ville = new Ville();
             $ville->setNom('NANTES');
             $ville->setCodePostal(44000);
@@ -88,18 +88,20 @@ class AppFixtures extends Fixture
             $ville->setCodePostal(79000);
             $this->manager->persist($ville);
 
-            $ville = new Ville();
-            $ville->setNom('QUIMPER');
-            $ville->setCodePostal(29000);
-            $this->manager->persist($ville);
 
-            $ville = new Ville();
-            $ville->setNom('RENNES');
-            $ville->setCodePostal(35000);
-            $this->manager->persist($ville);
+        $ville = new Ville();
+        $ville->setNom('QUIMPER');
+        $ville->setCodePostal(29000);
+        $this->manager->persist($ville);
+
+        $ville = new Ville();
+        $ville->setNom('RENNES');
+        $ville->setCodePostal(35000);
+        $this->manager->persist($ville);
 
 
-            $this->manager->flush();
+        $this->manager->flush();
+
     }
 
     public function addLieux(){
@@ -162,18 +164,18 @@ class AppFixtures extends Fixture
         $this->manager->flush();
     }
 
-   public function addUser(){
+    public function addUser(){
 
-       $campus = $this->campusRepository->findAll();
+        $campus = $this->campusRepository->findAll();
 
-         for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user
 
                 ->setPseudo('pseudo'.$i)
-                ->setNom('Nom'.$i)
-                ->setPrenom('Prénom'.$i)
-                ->setTel('01 23 45 67 89')
+                ->setNom($this->generator->lastName)
+                ->setPrenom($this->generator->firstName)
+                ->setTel($this->generator->phoneNumber)
                 ->setEmail("Nom$i@mail.com");
             $psw = $this->hasher->hashPassword($user,'123456');
             $user
@@ -183,12 +185,12 @@ class AppFixtures extends Fixture
                 ->setCampus($this->generator->randomElement($campus));
 
             $this->manager->persist($user);
-            }
+        }
 
         $this->manager->flush();
 
-        }
-        
+    }
+
     public function addSorties(){
 
 
