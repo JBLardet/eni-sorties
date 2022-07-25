@@ -194,8 +194,10 @@ class AppFixtures extends Fixture
 
         $campus = $this->campusRepository->findAll();
         $lieux = $this->lieuRepository->findAll();
-        $etats = $this->etatRepository->findAll();
+
         $users = $this->userRepository->findAll();
+
+        $etats = $this->etatRepository->findAll();
 
         foreach($etats as $etat) {
 
