@@ -38,7 +38,20 @@
             </div>
         </nav>
     </header>
+
     <main class="align-self-center">
+
+
+    {# Affichage des messages flash #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <main>
+
         {% block body %}{% endblock %}
     </main>
     <footer>

@@ -77,10 +77,17 @@ class AppFixtures extends Fixture
     public function addVilles(){
 
 
-        $ville = new Ville();
-        $ville->setNom('NIORT');
-        $ville->setCodePostal(79000);
-        $this->manager->persist($ville);
+
+            $ville = new Ville();
+            $ville->setNom('NANTES');
+            $ville->setCodePostal(44000);
+            $this->manager->persist($ville);
+
+            $ville = new Ville();
+            $ville->setNom('NIORT');
+            $ville->setCodePostal(79000);
+            $this->manager->persist($ville);
+
 
         $ville = new Ville();
         $ville->setNom('QUIMPER');
@@ -92,7 +99,9 @@ class AppFixtures extends Fixture
         $ville->setCodePostal(35000);
         $this->manager->persist($ville);
 
+
         $this->manager->flush();
+
     }
 
     public function addLieux(){
@@ -140,6 +149,8 @@ class AppFixtures extends Fixture
 
     private function addCampus()
     {
+        //Todo potentiel : Remplacer par la bonne liste des campus si on les trouve (ex: SAINT HERBLAIN)
+        //Sinon préciser la ville et le campus fait doublon sur les sorties
         $listeCampus = ['NANTES', 'RENNES', 'QUIMPER', 'NIORT'];
 
         foreach ($listeCampus as $c) {
@@ -160,6 +171,7 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user
+
                 ->setPseudo('pseudo'.$i)
                 ->setNom($this->generator->lastName)
                 ->setPrenom($this->generator->firstName)
@@ -194,16 +206,16 @@ class AppFixtures extends Fixture
             }
         }
 
-        for ($i=0; $i<10; $i++) {
+        for ($i=0; $i<50; $i++) {
 
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
-            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 week'));
+            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 month'));
             $sortie->setDuree(120);
             $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('+ 4 days', '+ 6 days'));
             $sortie->setInfosSortie("La sortie de l'année!");
             $sortie->setNbInscriptionsMax($this->generator->numberBetween(5, 20));
-            $sortie->setEtat($etatOuverte);
+            $sortie->setEtat($this->generator->randomElement($etats));
             $sortie->setLieu($this->generator->randomElement($lieux));
             $sortie->setOrganisateur($this->generator->randomElement($users));
             $sortie->setCampus($this->generator->randomElement($campus));

@@ -48,18 +48,15 @@ class RechercheFormType extends AbstractType
             ])
             ->add('organisateur', CheckboxType::class, [
                 'label' => "Sorties dont je suis l'organisateur/trice",
-                'required' => false,
-                'data' => true
+                'required' => false
             ])
             ->add('participant', CheckboxType::class, [
                 'label' => "Sorties auxquelles je suis inscrit/e",
-                'required' => false,
-                'data' => true
+                'required' => false
             ])
             ->add('nonParticipant', CheckboxType::class, [
                 'label' => "Sorties auxquelles je ne suis pas inscrit/e",
-                'required' => false,
-                'data' => true
+                'required' => false
             ])
             ->add('sortiesPassees', CheckboxType::class, [
                 'label' => "Sorties passées",
