@@ -127,13 +127,14 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
     /**
      * @Route ("/inscription/{id}", name="sortie_inscription", requirements={"id": "\d+"})
      */
-    public function inscriptionSortie(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, $id)
+    public function inscriptionSortie(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, EtatManager $etatManager, $id)
     {
 
         $sortie = $sortieRepository->find($id);
         $user = $this->getUser();
+        $etatOuverte = $etatManager->recupererEtats('OUVERTE');
 
-        if ( 1 == 1 ) {
+        if ( $sortie->getEtat() === $etatOuverte ) {
             $sortie->addParticipant($user);
             $entityManager->persist($sortie);
             $entityManager->flush();
@@ -148,19 +149,45 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
     /**
      * @Route ("/desinscription/{id}", name="sortie_desinscription", requirements={"id": "\d+"})
      */
-    public function desinscriptionSortie(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, $id)
+    public function desinscriptionSortie(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, EtatManager $etatManager, $id)
     {
-
+        $etatOuverte = $etatManager->recupererEtats('OUVERTE');
+        $etatCloturee = $etatManager->recupererEtats('CLOTUREE');
         $sortie = $sortieRepository->find($id);
         $user = $this->getUser();
 
-        if ( 1 == 1 ) {
+        if ( $sortie->getEtat() === $etatOuverte or $sortie->getEtat() === $etatCloturee ) {
             $sortie->removeParticipant($user);
             $entityManager->persist($sortie);
             $entityManager->flush();
             $this->addFlash('success', 'Votre désinscription a bien été prise en compte !');
         } else {
             $this->addFlash('error', 'Erreur : votre désinscription a échouée ! Veuillez contacter un administrateur');
+        }
+
+        return $this->redirectToRoute('sorties_liste');
+    }
+
+    /**
+     * @Route ("/annulerSortie/{id}", name="sortie_annulation", requirements={"id": "\d+"})
+     */
+    public function annulationSortie(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, EtatManager $etatManager, $id)
+    {
+        $etatOuverte = $etatManager->recupererEtats('OUVERTE');
+        $etatCloturee = $etatManager->recupererEtats('CLOTUREE');
+        $etatAnnulee = $etatManager->recupererEtats('ANNULEE');
+        $sortie = $sortieRepository->find($id);
+        $user = $this->getUser();
+
+        if ($sortie->getOrganisateur() === $user and ($sortie->getEtat() === $etatOuverte or $sortie->getEtat() === $etatCloturee )) {
+
+            //TODO : concaténation MOTIF à la description
+            $sortie->setEtat($etatAnnulee);
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+            $this->addFlash('success', 'La sortie a bien été annulée !');
+        } else {
+            $this->addFlash('error', 'Erreur : la sortie n\'a pas pu être annulée ! Veuillez contacter un administrateur');
         }
 
         return $this->redirectToRoute('sorties_liste');
