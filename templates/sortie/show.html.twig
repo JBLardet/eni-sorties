@@ -8,39 +8,88 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Nom de la sortie</th>
+                <th>Nom de la sortie : </th>
                 <td>{{ sortie.nom }}</td>
             </tr>
             <tr>
-                <th>Campus</th>
-                <td>{{ sortie.nom }}</td>
+                <th>Statut : </th>
+                <td>{{ sortie.etat.libelle }}</td>
             </tr>
             <tr>
-                <th>DateHeureDebut</th>
+                <th>Date et heure de la sortie : </th>
                 <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>Duree</th>
+                <th>Durée : </th>
                 <td>{{ sortie.duree }}</td>
             </tr>
             <tr>
-                <th>DateLimiteInscription</th>
+                <th>Date limite d'inscription : </th>
                 <td>{{ sortie.dateLimiteInscription ? sortie.dateLimiteInscription|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>NbInscriptionsMax</th>
+                <th>Nombre de places : </th>
                 <td>{{ sortie.nbInscriptionsMax }}</td>
             </tr>
             <tr>
-                <th>InfosSortie</th>
+                <th>Description et infos : </th>
                 <td>{{ sortie.infosSortie }}</td>
+            </tr>
+            <tr>
+                <th>Campus : </th>
+                <td>{{ sortie.campus.nom }}</td>
+            </tr>
+            <tr>
+                <th>Lieu : </th>
+                <td>{{ sortie.lieu.nom }}</td>
+            </tr>
+            <tr>
+                <th>Rue : </th>
+                <td>{{ sortie.lieu.rue }}</td>
+            </tr>
+            <tr>
+                <th>Ville : </th>
+                <td>{{ sortie.lieu.ville.codePostal }} {{ sortie.lieu.ville.nom }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('sorties_liste') }}">back to list</a>
 
-    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}">edit</a>
+    <br><br><br>
 
-    {{ include('sortie/_delete_form.html.twig') }}
+    <h3>Liste des participants inscrits</h3>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Pseudo : </th>
+            <th>Nom : </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for participant in sortie.participants %}
+            <tr>
+                <td>{{ participant.pseudo }}</td>
+                <td>{{ participant.nom }} {{ participant.prenom }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">Il n'y a aucun participant pour le moment.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <br><br><br>
+    <a href="{{ path('sorties_liste') }}"><button class="btn"> Retour à la liste </button></a>
+
+{% if sortie.etat.libelle == 'EN CREATION' %}
+
+    <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}"><button class="btn"> Modifier </button></a>
+
+{% endif %}
+
+    {% if sortie.organisateur == app.user and sortie.etat.libelle == 'EN CREATION' %}
+        {{ include('sortie/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}

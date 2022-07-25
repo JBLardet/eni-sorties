@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class SortieController extends AbstractController
@@ -27,7 +28,7 @@ class SortieController extends AbstractController
         $user = $this->getUser();
         $campus = $this->getUser()->getCampus();
         $rechercheModel = new RechercheFormModel();
-        $rechercheModel->setCampus($campus);
+        //$rechercheModel->setCampus($campus);
 
         dump($rechercheModel);
 
@@ -35,14 +36,15 @@ class SortieController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             dump($rechercheModel);
-            return $this->render('sortie/index.html.twig', [
-                'RechercheForm' => $form->createView(),
-                'sorties' => $sortieRepository->findByFormulaire($rechercheModel, $user),
-            ]);
+$sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
+        }else{
+            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
         }
+
+
         return $this->render('sortie/index.html.twig', [
             'RechercheForm' => $form->createView(),
-            'sorties' => $sortieRepository->findbyCampus($campus),
+            'sorties' => $sorties,
         ]);
     }
 
@@ -120,5 +122,47 @@ class SortieController extends AbstractController
         }
 
         return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @Route ("/inscription/{id}", name="sortie_inscription", requirements={"id": "\d+"})
+     */
+    public function inscriptionSortie(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, $id)
+    {
+
+        $sortie = $sortieRepository->find($id);
+        $user = $this->getUser();
+
+        if ( 1 == 1 ) {
+            $sortie->addParticipant($user);
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+            $this->addFlash('success', 'Votre inscription a bien été enregistrée ! ');
+        } else {
+            $this->addFlash('error', 'Inscription impossible');
+        }
+
+        return $this->redirectToRoute('sorties_liste');
+    }
+
+    /**
+     * @Route ("/desinscription/{id}", name="sortie_desinscription", requirements={"id": "\d+"})
+     */
+    public function desinscriptionSortie(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, $id)
+    {
+
+        $sortie = $sortieRepository->find($id);
+        $user = $this->getUser();
+
+        if ( 1 == 1 ) {
+            $sortie->removeParticipant($user);
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+            $this->addFlash('success', 'Votre désinscription a bien été prise en compte !');
+        } else {
+            $this->addFlash('error', 'Erreur : votre désinscription a échouée ! Veuillez contacter un administrateur');
+        }
+
+        return $this->redirectToRoute('sorties_liste');
     }
 }
