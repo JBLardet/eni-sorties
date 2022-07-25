@@ -13,6 +13,7 @@ use App\Repository\EtatRepository;
 use App\Repository\LieuRepository;
 use App\Repository\UserRepository;
 use App\Repository\VilleRepository;
+use App\Service\EtatManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -32,11 +33,13 @@ class AppFixtures extends Fixture
     private UserRepository $userRepository;
     private UserPasswordHasherInterface $hasher;
     private Generator $generator;
+    private EtatManager $etatManager;
 
     public function __construct(
                                     VilleRepository $villeRepo,
                                     LieuRepository $lieuRepository,
                                     EtatRepository $etatRepository,
+                                    EtatManager $etatManager,
                                     CampusRepository $campusRepository,
                                     UserRepository $userRepository,
                                     userPasswordHasherInterface $hasher)
@@ -48,6 +51,7 @@ class AppFixtures extends Fixture
         $this->userRepository = $userRepository;
         $this->generator = Factory::create("fr_FR");
         $this->hasher = $hasher;
+        $this->etatManager = $etatManager;
     }
 
     public function load(ObjectManager $manager): void
@@ -59,6 +63,7 @@ class AppFixtures extends Fixture
         $this->addCampus();
         $this->addUser();
         $this->addSorties();
+
     }
 
     public function addEtats(){
@@ -147,9 +152,8 @@ class AppFixtures extends Fixture
 
     private function addCampus()
     {
-        //Todo potentiel : Remplacer par la bonne liste des campus si on les trouve (ex: SAINT HERBLAIN)
-        //Sinon préciser la ville et le campus fait doublon sur les sorties
-        $listeCampus = ['NANTES', 'RENNES', 'QUIMPER', 'NIORT'];
+
+        $listeCampus = ['SAINT HERBLAIN', 'CHARTRES DE BRETAGNE', 'LA ROCHE SUR YON'];
 
         foreach ($listeCampus as $c) {
             $campus = new Campus();
@@ -171,8 +175,8 @@ class AppFixtures extends Fixture
             $user
 
                 ->setPseudo('pseudo'.$i)
-                ->setNom('Nom'.$i)
-                ->setPrenom('Prénom'.$i)
+                ->setNom($this->generator->lastName)
+                ->setPrenom($this->generator->firstName)
                 ->setTel('01 23 45 67 89')
                 ->setEmail("Nom$i@mail.com");
             $psw = $this->hasher->hashPassword($user,'123456');
@@ -191,20 +195,17 @@ class AppFixtures extends Fixture
         
     public function addSorties(){
 
-
         $campus = $this->campusRepository->findAll();
         $lieux = $this->lieuRepository->findAll();
-        $etats = $this->etatRepository->findAll();
+
         $users = $this->userRepository->findAll();
 
-        foreach($etats as $etat) {
+        $etats = $this->etatRepository->findAll();
 
-            if ($etat->getLibelle() == 'OUVERTE') {
-                $etatOuverte = $etat;
-            }
-        }
+        $etatOuverte = $this->etatManager->recupererEtats('OUVERTE');
 
-        for ($i=0; $i<50; $i++) {
+
+        for ($i=0; $i<20; $i++) {
 
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
@@ -212,13 +213,17 @@ class AppFixtures extends Fixture
             $sortie->setDuree(120);
             $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('+ 4 days', '+ 6 days'));
             $sortie->setInfosSortie("La sortie de l'année!");
-            $sortie->setNbInscriptionsMax($this->generator->numberBetween(5, 20));
+            $sortie->setNbInscriptionsMax($this->generator->numberBetween(10, 20));
             $sortie->setEtat($this->generator->randomElement($etats));
             $sortie->setLieu($this->generator->randomElement($lieux));
             $sortie->setOrganisateur($this->generator->randomElement($users));
             $sortie->setCampus($this->generator->randomElement($campus));
 
-
+            //if ($sortie->getEtat() == $etatOuverte) {
+            for($j=0; $j<($this->generator->numberBetween(0, 10)); $j++) {
+                $sortie->addParticipant($this->generator->randomElement($users));
+            }
+            //}
             $this->manager->persist($sortie);
 
         }

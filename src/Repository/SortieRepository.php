@@ -121,17 +121,15 @@ class SortieRepository extends ServiceEntityRepository
         }
         $queryBuilder->orderBy('s.dateHeureDebut', 'ASC');
 
-        $queryBuilder->andWhere('e.libelle != :val');
+        $queryBuilder->andWhere('e.libelle != :val and e.libelle != :encrea');
         $queryBuilder->setParameter('val', 'HISTORISEE');
+        $queryBuilder->setParameter('encrea', 'EN CREATION');
 
-//        $queryBuilder->andWhere('s.organisateur = $user and e.libelle = :val1');
-//        $queryBuilder->setParameter('val1', 'EN CREATION');
+        $queryBuilder->orWhere('e.libelle = :encreation and s.organisateur = :user');
+        $queryBuilder->setParameter('encreation', 'EN CREATION');
+        $queryBuilder->setParameter('user', $user);
 
-        //NE FONCTIONNE PAS
-//         if(s.organisateur != $user){
-//            $queryBuilder->andWhere('e.libelle != :v');
-//            $queryBuilder->setParameter('v', 'EN CREATION');
-//        }
+        $queryBuilder->orderBy('s.nom');
 
 
         $query = $queryBuilder->getQuery();
@@ -141,31 +139,5 @@ class SortieRepository extends ServiceEntityRepository
 
     }
 
-    /**
-     * @param Campus $campus
-     * @return Sortie[]
-     */
-    public function findByCampus(Campus $campus)
-    {
-
-        $queryBuilder = $this->createQueryBuilder('s');
-        $queryBuilder->join('s.campus', 'c');
-        $queryBuilder->join('s.etat', 'e');
-        $queryBuilder->join('s.organisateur', 'o');
-        $queryBuilder->leftJoin('s.participants', 'p')
-            ->addSelect('c', 'e', 'o', 'p');
-        $queryBuilder->andWhere('s.campus = :campus');
-        $queryBuilder->setParameter('campus', $campus);
-        $queryBuilder->orderBy('s.dateHeureDebut', 'ASC');
-        $queryBuilder->andWhere('e.libelle != :val1 and e.libelle != :val2');
-        $queryBuilder->setParameter('val1', 'HISTORISEE');
-        $queryBuilder->setParameter('val2', 'TERMINEE');
-
-        $query = $queryBuilder->getQuery();
-        $result = $query->getResult();
-
-        return $result;
-
-    }
 
 }
