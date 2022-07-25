@@ -9,6 +9,7 @@ use App\Form\RechercheFormType;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
+use App\Service\EtatManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,21 +51,22 @@ class SortieController extends AbstractController
     /**
      * @Route("/NouvelleSortie", name="sortie_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, SortieRepository $sortieRepository, EtatRepository $etatRepository): Response
+    public function new(Request $request, SortieRepository $sortieRepository, EtatRepository $etatRepository, EtatManager $etatManager): Response
     {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
+        $sortie->setOrganisateur($this->getUser());
         dump($sortie);
         if ($form->isSubmitted() && $form->isValid()) {
-            $etats = $etatRepository->findAll();
-            foreach ($etats as $etat) {
-                if ($etat->getLibelle() == 'EN CREATION') {
-                    $etatENCREATION = $etat;
-                }}
-            $sortie->setEtat($etatENCREATION);
-            $sortie->setOrganisateur($this->getUser());
+            if ($form->getClickedButton() === $form->get('Enregistrer')) {
+            $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
             $sortieRepository->add($sortie, true);
+            }
+            if ($form->get('bouton')->getData() == 'Publier') {
+                $sortie->setEtat($etatManager->recupererEtats('OUVERTE'));
+                $sortieRepository->add($sortie, true);
+            }
 
             $this->addFlash('success', 'Sortie créée !');
             return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
