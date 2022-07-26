@@ -29,7 +29,7 @@ class SortieController extends AbstractController
         $user = $this->getUser();
         $campus = $this->getUser()->getCampus();
         $rechercheModel = new RechercheFormModel();
-        //$rechercheModel->setCampus($campus);
+        $rechercheModel->setCampus($campus);
 
         dump($rechercheModel);
 
@@ -54,7 +54,7 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
     /**
      * @Route("/NouvelleSortie", name="sortie_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, SortieRepository $sortieRepository, EtatRepository $etatRepository, EtatManager $etatManager): Response
+    public function new(Request $request, SortieRepository $sortieRepository, EtatManager $etatManager, EtatRepository $etatRepository): Response
     {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
@@ -62,14 +62,17 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
         $sortie->setOrganisateur($this->getUser());
         dump($sortie);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->getClickedButton() === $form->get('Enregistrer')) {
-            $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
-            $sortieRepository->add($sortie, true);
-            }
-            if ($form->get('bouton')->getData() == 'Publier') {
+
+            if ($form->get('enregistrer')->isSubmitted())
+                $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
+
+            if ($form->get('publier')->isSubmitted())
                 $sortie->setEtat($etatManager->recupererEtats('OUVERTE'));
-                $sortieRepository->add($sortie, true);
-            }
+
+
+            $sortie->setOrganisateur($this->getUser());
+            $sortie->addParticipant($this->getUser());
+            $sortieRepository->add($sortie, true);
 
             $this->addFlash('success', 'Sortie créée !');
             return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
