@@ -27,7 +27,8 @@ class SortieController extends AbstractController
      */
     public function liste(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, Request $request, EtatManager $etatManager): Response
     {
-        $etatManager->modificationAutomatiqueEtats();
+        $auto = $etatManager->modificationAutomatiqueEtats();
+        dump($auto);
         $user = $this->getUser();
         $campus = $this->getUser()->getCampus();
         $rechercheModel = new RechercheFormModel();
@@ -36,8 +37,7 @@ class SortieController extends AbstractController
         $form = $this->createForm(RechercheFormType::class, $rechercheModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($rechercheModel);
-$sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
+            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
         }else{
             $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
         }

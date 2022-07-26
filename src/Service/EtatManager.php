@@ -40,46 +40,65 @@ class EtatManager
         return $monEtat;
     }
 
-    public function modificationAutomatiqueEtats() : void
+    public function modificationAutomatiqueEtats() : bool
     {
-        $sorties = $this->sortieRepository->findAll();
-        $etatEnCreation = $this->recupererEtats('EN CREATION');
-        $etatOuverte = $this->recupererEtats('OUVERTE');
-        $etatCloturee = $this->recupererEtats('CLOTUREE');
-        $etatAnnulee = $this->recupererEtats('ANNULEE');
-        $etatEnCours = $this->recupererEtats('EN COURS');
-        $etatTerminee = $this->recupererEtats('TERMINEE');
-        $etatHistorisee = $this->recupererEtats('HISTORISEE');
+        $sorties = $this->sortieRepository->findAllSaufEnCreationEtHistorisee();
+        //toutes les sorties sauf 'en creation' et 'historisee'
+
+        $etats = $this->etatRepository->findAll();
+
+        foreach($etats as $etat) {
+
+            if ($etat->getLibelle() == 'CLOTUREE') {
+                $etatCloturee = $etat;
+            }
+            if ($etat->getLibelle() == 'EN COURS') {
+                $etatEnCours = $etat;
+            }
+            if ($etat->getLibelle() == 'TERMINEE') {
+                $etatTerminee = $etat;
+            }
+            if ($etat->getLibelle() == 'HISTORISEE') {
+                $etatHistorisee = $etat;
+            }
+        }
 
 
 
         foreach ($sorties as $sortie) {
-            $dateHeureFinSortie = $sortie->getDateHeureDebut()->add(new DateInterval( '+ '.$sortie->getDuree().' minutes' ));
-            $dateSortieAHistoriser = $dateHeureFinSortie->add(new DateInterval( '+ 1 month' ));
+            $dateHeureFinSortie = clone $sortie->getDateHeureDebut();
+            $dateHeureFinSortie->modify('+ '.$sortie->getDuree().' minutes');
 
-            //passage etat ouverte -> cloturee
-            if($sortie->getEtat() === $etatOuverte and 'now' > $sortie->getDateLimiteInscription())
-            {
-                $sortie->setEtat($etatCloturee);
-            }
-            //passage etat cloturee -> en cours
-            if(($sortie->getEtat() !== $etatAnnulee or $sortie->getEtat() !== $etatEnCreation) and $sortie->getDateHeureDebut()< 'now' and 'now' < $dateHeureFinSortie)
-            {
-                $sortie->setEtat($etatEnCours);
-            }
-            //passage etat en cours -> terminee
-            if(($sortie->getEtat() !== $etatAnnulee or $sortie->getEtat() !== $etatEnCreation) and $dateHeureFinSortie< 'now' and 'now' < $dateSortieAHistoriser)
-            {
-                $sortie->setEtat($etatTerminee);
-            }
-            //passage etat terminee ou annulee -> historisée
-            if($sortie->getEtat() !== $etatEnCreation and 'now' > $dateSortieAHistoriser)
+            $dateSortieAHistoriser = clone $dateHeureFinSortie;
+            $dateSortieAHistoriser->modify('+ 1 month');
+
+            //passage etat -> historisée
+            if('now' > $dateSortieAHistoriser)
             {
                 $sortie->setEtat($etatHistorisee);
             }
 
-        }
+            //passage etat -> terminee
+            if('now' > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {
+                $sortie->setEtat($etatTerminee);
+            }
 
+            //passage etat -> en cours
+            if($sortie->getDateHeureDebut()< 'now' and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {
+                $sortie->setEtat($etatEnCours);
+            }
+
+            //passage etat -> cloturee
+            if('now' > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {
+                $sortie->setEtat($etatCloturee);
+            }
+
+
+        }
+        return true;
     }
 
 

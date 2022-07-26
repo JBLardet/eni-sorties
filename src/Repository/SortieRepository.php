@@ -139,5 +139,22 @@ class SortieRepository extends ServiceEntityRepository
 
     }
 
+    /**
+     * @return Sortie[]
+     */
+    public function findAllSaufEnCreationEtHistorisee()
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+        $queryBuilder->join('s.etat', 'e');
+        $queryBuilder->andWhere('e.libelle != :etat1 and e.libelle != :etat2');
+        $queryBuilder->setParameter('etat1', 'EN CREATION');
+        $queryBuilder->setParameter('etat2', 'HISTORISEE');
+        $query = $queryBuilder->getQuery();
+        $result = $query->getResult();
+
+        return $result;
+
+    }
+
 
 }

@@ -215,9 +215,9 @@ class AppFixtures extends Fixture
 
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
-            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('+ 1 week', '+ 2 month'));
+            $sortie->setDateHeureDebut($this->generator->dateTimeBetween('- 1 week', '+ 1 week'));
             $sortie->setDuree(120);
-            $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('+ 4 days', '+ 6 days'));
+            $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('-2 week', '- 1 week'));
             $sortie->setInfosSortie("La sortie de l'année!");
             $sortie->setNbInscriptionsMax($this->generator->numberBetween(6, 12));
             $sortie->setEtat($this->generator->randomElement($etats));
