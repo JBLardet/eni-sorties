@@ -111,11 +111,17 @@ input {
 button{
     color:#fff;
 }
+.enligne{
+    display:inline;
+}
 .btn{
     color:#fff;
     background-color: orange;
+    border-style: none;
+    margin:10px;
 }
 .btn:hover{
+    color:#fff;
     background-color: deeppink;
     border-style: none;
 }

@@ -24,15 +24,19 @@
                 <td>{{ user.email }}</td>
             </tr>
             <tr>
-                <th>Actif</th>
-                <td>{{ user.actif ? 'Yes' : 'No' }}</td>
+                <th>Campus</th>
+                <td>{{ user.campus.nom }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('user_index') }}">Voir la liste de tous les utilisateurs</a>
 
-    <a href="{{ path('user_edit', {'id': user.id}) }}">Modifier le profil</a>
 
-    {{ include('user/_delete_form.html.twig') }}
+    <a href="{{ path('user_edit', {'id': user.id}) }}"><button class="btn enligne" value="Modifier le profil">Modifier le profil</button></a>
+
+    {% if is_granted("ROLE_ADMIN") %}
+        {{ include('user/_delete_form.html.twig') }}
+        <a href="{{ path('user_index') }}"><button class="btn enligne" value="Liste de tous les utilisateurs">Liste de tous les utilisateurs</button></a>
+
+    {% endif %}
 {% endblock %}
