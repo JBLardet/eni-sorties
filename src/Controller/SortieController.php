@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Campus;
+
 use App\Entity\Sortie;
 use App\Form\AnnulationFormType;
 use App\Form\model\AnnulationFormModel;
@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
+
 
 
 class SortieController extends AbstractController
@@ -25,20 +25,19 @@ class SortieController extends AbstractController
     /**
      * @Route("/", name="sorties_liste", methods={"GET", "POST"})
      */
-    public function liste(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, Request $request): Response
+    public function liste(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, Request $request, EtatManager $etatManager): Response
     {
+        $auto = $etatManager->modificationAutomatiqueEtats();
+        dump($auto);
         $user = $this->getUser();
         $campus = $this->getUser()->getCampus();
         $rechercheModel = new RechercheFormModel();
         $rechercheModel->setCampus($campus);
 
-        dump($rechercheModel);
-
         $form = $this->createForm(RechercheFormType::class, $rechercheModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($rechercheModel);
-$sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
+            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
         }else{
             $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
         }
@@ -177,7 +176,7 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
         if ( $sortie->getEtat() === $etatOuverte or $sortie->getEtat() === $etatCloturee ) {
             $sortie->removeParticipant($user);
             $NbParticipants = count($sortie->getParticipants());
-            if($NbParticipants < $sortie->getNbInscriptionsMax() and $sortie->getDateLimiteInscription() > 'now') {
+            if($NbParticipants < $sortie->getNbInscriptionsMax() and $sortie->getDateLimiteInscription() >= 'now') {
                 $sortie->setEtat($etatOuverte);
             }
             $entityManager->persist($sortie);

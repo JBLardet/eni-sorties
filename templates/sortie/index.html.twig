@@ -39,8 +39,8 @@
             <tr>
 
                 <td>{{ sortie.nom }}</td>
-                <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('Y-m-d H:i') : '' }}</td>
-                <td>{{ sortie.dateLimiteInscription ? sortie.dateLimiteInscription|date('Y-m-d') : '' }}</td>
+                <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('d-m-Y H:i') : '' }}</td>
+                <td>{{ sortie.dateLimiteInscription ? sortie.dateLimiteInscription|date('d-m-Y') : '' }}</td>
                 <td>{{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}</td>
                 <td>{{ sortie.etat.libelle }}</td>
                 <td>
