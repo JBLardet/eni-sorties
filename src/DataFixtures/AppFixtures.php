@@ -209,6 +209,7 @@ class AppFixtures extends Fixture
         $etats = $this->etatRepository->findAll();
 
         $etatOuverte = $this->etatManager->recupererEtats('OUVERTE');
+        $etatEnCreation = $this->etatManager->recupererEtats('EN CREATION');
 
 
         for ($i=0; $i<25; $i++) {
@@ -216,8 +217,12 @@ class AppFixtures extends Fixture
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
             $sortie->setDateHeureDebut($this->generator->dateTimeBetween('- 1 week', '+ 1 week'));
+
+            $dateSortie = clone $sortie->getDateHeureDebut();
+            $dateCloture = $dateSortie->modify('-2 days');
+
             $sortie->setDuree(120);
-            $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('-2 week', '- 1 week'));
+            $sortie->setDateLimiteInscription($dateCloture);
             $sortie->setInfosSortie("La sortie de l'année!");
             $sortie->setNbInscriptionsMax($this->generator->numberBetween(6, 12));
             $sortie->setEtat($this->generator->randomElement($etats));
@@ -225,11 +230,11 @@ class AppFixtures extends Fixture
             $sortie->setOrganisateur($this->generator->randomElement($users));
             $sortie->setCampus($this->generator->randomElement($campus));
 
-            //if ($sortie->getEtat() == $etatOuverte) {
+            if ($sortie->getEtat() !== $etatEnCreation) {
             for($j=0; $j<($this->generator->numberBetween(0, 10)); $j++) {
                 $sortie->addParticipant($this->generator->randomElement($users));
             }
-            //}
+            }
             $this->manager->persist($sortie);
 
         }

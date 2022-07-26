@@ -48,6 +48,9 @@ class EtatManager
 
         foreach($etats as $etat) {
 
+            if ($etat->getLibelle() == 'OUVERTE') {
+                $etatOuverte = $etat;
+            }
             if ($etat->getLibelle() == 'CLOTUREE') {
                 $etatCloturee = $etat;
             }
@@ -60,10 +63,11 @@ class EtatManager
             if ($etat->getLibelle() == 'HISTORISEE') {
                 $etatHistorisee = $etat;
             }
-            dump($etat);
         }
 
-
+            $now = new \DateTime();
+            $now->modify('+ 2 hours');
+        dump($now);
 
         foreach ($sorties as $sortie) {
             $dateHeureFinSortie = clone $sortie->getDateHeureDebut();
@@ -73,32 +77,35 @@ class EtatManager
             $dateSortieAHistoriser->modify('+ 1 month');
 
 
+
             //passage etat -> historisée
-            if('now' > $dateSortieAHistoriser)
+            if($now > $dateSortieAHistoriser)
             {
                 $sortie->setEtat($etatHistorisee);
-            }
-
-            //passage etat -> terminee
-            if('now' > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
-            {
+            } elseif ($now > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {   //passage etat -> terminee
                 $sortie->setEtat($etatTerminee);
-            }
-
-            //passage etat -> en cours
-            if($sortie->getDateHeureDebut()< 'now' and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
-            {
+            } elseif ($sortie->getDateHeureDebut()< $now and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {   //passage etat -> en cours
                 $sortie->setEtat($etatEnCours);
-            }
-
-            //passage etat -> cloturee
-            if('now' > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            } elseif ($now > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
             {
                 $sortie->setEtat($etatCloturee);
+            }elseif ($now < $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {
+                $sortie->setEtat($etatOuverte);
             }
 
+//            dump($sortie);
+//            dump($now > $dateHeureFinSortie);
+//            dump($sortie->getEtat()->getLibelle() !== 'ANNULEE');
+
+            $this->entityManager->persist($sortie);
 
         }
+
+        $this->entityManager->flush();
+
         return true;
     }
 
