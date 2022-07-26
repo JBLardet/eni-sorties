@@ -213,7 +213,7 @@ class AppFixtures extends Fixture
             $sortie->setDuree(120);
             $sortie->setDateLimiteInscription($this->generator->dateTimeBetween('+ 4 days', '+ 6 days'));
             $sortie->setInfosSortie("La sortie de l'année!");
-            $sortie->setNbInscriptionsMax($this->generator->numberBetween(10, 20));
+            $sortie->setNbInscriptionsMax($this->generator->numberBetween(6, 12));
             $sortie->setEtat($this->generator->randomElement($etats));
             $sortie->setLieu($this->generator->randomElement($lieux));
             $sortie->setOrganisateur($this->generator->randomElement($users));
