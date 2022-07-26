@@ -72,6 +72,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ;
     }
 
+    /**
+     * @return User[] Returns an array of User objects
+     */
+    public function showUserProfile($user): ?User
+    {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $user->getUsernom();
+    }
+
+
 
 //    /**
 //     * @return User[] Returns an array of User objects
