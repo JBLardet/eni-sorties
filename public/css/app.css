@@ -92,6 +92,10 @@ footer {
     background-color: forestgreen;
 }
 
+.flash-error {
+    background-color: firebrick;
+}
+
 /*.btnLieu {*/
 /*    background-color: dodgerblue;*/
 /*    color: dodgerblue;*/

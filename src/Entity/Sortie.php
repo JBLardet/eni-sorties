@@ -6,6 +6,7 @@ use App\Repository\SortieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=SortieRepository::class)
@@ -35,7 +36,7 @@ class Sortie
     private $duree;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="date")
      */
     private $dateLimiteInscription;
 
@@ -232,5 +233,6 @@ class Sortie
 
         return $this;
     }
-    
+
+
 }

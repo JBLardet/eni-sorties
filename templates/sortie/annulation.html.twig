@@ -5,7 +5,9 @@
 {% block body %}
     <h1>Edit Sortie</h1>
 
-    {{ include('sortie/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+    {{ form(AnnulationFormType) }}
+    <a href="{{ path('sorties_liste') }}"><button class="btn"> Annuler </button></a>
+
 
     <br><br>
 
