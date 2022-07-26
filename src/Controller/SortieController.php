@@ -9,6 +9,7 @@ use App\Form\RechercheFormType;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
+use App\Service\EtatManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,7 +53,7 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
     /**
      * @Route("/NouvelleSortie", name="sortie_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, SortieRepository $sortieRepository, EtatRepository $etatRepository): Response
+    public function new(Request $request, SortieRepository $sortieRepository, EtatManager $etatManager, EtatRepository $etatRepository): Response
     {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
@@ -62,25 +63,12 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($form->get('enregistrer')->isSubmitted())
-                $sortie->setEtat('');
-
-//            $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
-//            $sortieRepository->add($sortie, true);
-//        }
-//        if ($form->get('bouton')->getData() == 'Publier') {
-//            $sortie->setEtat($etatManager->recupererEtats('OUVERTE'));
-//            $sortieRepository->add($sortie, true);
+                $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
 
             if ($form->get('publier')->isSubmitted())
-                $sortie->setEtat();
+                $sortie->setEtat($etatManager->recupererEtats('OUVERTE'));
 
 
-            $etats = $etatRepository->findAll();
-            foreach ($etats as $etat) {
-                if ($etat->getLibelle() == 'EN CREATION') {
-                    $etatENCREATION = $etat;
-                }}
-//            $sortie->setEtat($etatENCREATION);
             $sortie->setOrganisateur($this->getUser());
             $sortie->addParticipant($this->getUser());
             $sortieRepository->add($sortie, true);

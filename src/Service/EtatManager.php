@@ -4,6 +4,7 @@
 namespace App\Service;
 
 
+use App\Entity\Etat;
 use App\Repository\EtatRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -20,7 +21,8 @@ class EtatManager
         $this->etatRepository = $etatRepository;
     }
 
-    public function recupererEtats(String $e){
+    public function recupererEtats(String $e): Etat
+    {
 
         $etats = $this->etatRepository->findAll();
 

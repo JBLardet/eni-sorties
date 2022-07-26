@@ -43,10 +43,10 @@ class SortieType extends AbstractType
             ])
             ->add('nbInscriptionsMax', IntegerType::class, [
                 'label' => 'Nombre de places : ',
+                'data' => 20,
                 'attr' => [
                     'min' => 10,
                     'max' => 600,
-                    'placeholder' => 20,
                 ],
             ])
 //            ->add('duree', RangeType::class, [
