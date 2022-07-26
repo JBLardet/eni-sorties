@@ -22,7 +22,8 @@ class AnnulationFormType extends AbstractType
                 'required' => true
             ])
             ->add('enregistrer', SubmitType::class, [
-                'label' => 'Enregistrer'
+                'label' => 'Enregistrer',
+                'attr' => ['class' => 'btn']
             ]);
     }
 

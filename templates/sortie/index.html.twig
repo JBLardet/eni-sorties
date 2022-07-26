@@ -48,12 +48,16 @@
                             x
                     {% endif %}
                 </td>
-                <td>{{ sortie.organisateur.nom }} {{ sortie.organisateur.prenom }}</td>
+                <td><a href="{{ path('user_show', {'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.nom }} {{ sortie.organisateur.prenom }}</a></td>
                 <td>
                     <a href="{{ path('app_sortie_show', {'id': sortie.id}) }}"> Afficher </a>
                     {% if sortie.organisateur == app.user and sortie.etat.libelle == 'EN CREATION'%}
                     <a href="{{ path('app_sortie_edit', {'id': sortie.id}) }}"> Modifier </a>
                     {% endif %}
+                    {% if sortie.organisateur == app.user and (sortie.etat.libelle == 'OUVERTE' or sortie.etat.libelle == 'CLOTUREE')%}
+                        <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}"> Annuler </a>
+                    {% endif %}
+
                     {% if app.user not in sortie.participants and sortie.dateLimiteInscription > 'now' and sortie.etat.libelle == 'OUVERTE'%}
                         <a href="{{ path('sortie_inscription', {'id': sortie.id})}}"> S'inscrire </a>
                     {% endif %}
