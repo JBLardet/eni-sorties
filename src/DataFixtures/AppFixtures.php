@@ -211,7 +211,7 @@ class AppFixtures extends Fixture
         $etatOuverte = $this->etatManager->recupererEtats('OUVERTE');
 
 
-        for ($i=0; $i<20; $i++) {
+        for ($i=0; $i<50; $i++) {
 
             $sortie = new Sortie();
             $sortie->setNom('sortie' . $i);
