@@ -43,7 +43,6 @@ class EtatManager
     public function modificationAutomatiqueEtats() : bool
     {
         $sorties = $this->sortieRepository->findAllSaufEnCreationEtHistorisee();
-        //toutes les sorties sauf 'en creation' et 'historisee'
 
         $etats = $this->etatRepository->findAll();
 
@@ -61,6 +60,7 @@ class EtatManager
             if ($etat->getLibelle() == 'HISTORISEE') {
                 $etatHistorisee = $etat;
             }
+            dump($etat);
         }
 
 
@@ -69,8 +69,9 @@ class EtatManager
             $dateHeureFinSortie = clone $sortie->getDateHeureDebut();
             $dateHeureFinSortie->modify('+ '.$sortie->getDuree().' minutes');
 
-            $dateSortieAHistoriser = clone $dateHeureFinSortie;
+            $dateSortieAHistoriser = clone $sortie->getDateHeureDebut();
             $dateSortieAHistoriser->modify('+ 1 month');
+
 
             //passage etat -> historisée
             if('now' > $dateSortieAHistoriser)
