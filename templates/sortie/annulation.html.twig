@@ -5,7 +5,9 @@
 {% block body %}
     <h1>Edit Sortie</h1>
 
-    {{ form(AnnulationFormType) }}
+    {{ form_start(annulationForm) }}
+    {{ form_widget(annulationForm) }}
+    {{ form_end(annulationForm) }}
     <a href="{{ path('sorties_liste') }}"><button class="btn"> Annuler </button></a>
 
 
@@ -14,6 +16,4 @@
     <a href="{{ path('sorties_liste') }}"><button class="btn">Retour à la liste </button></a>
 
     <br><br>
-
-    {{ include('sortie/_delete_form.html.twig') }}
 {% endblock %}

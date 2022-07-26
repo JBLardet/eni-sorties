@@ -33,7 +33,4 @@ class AnnulationFormType extends AbstractType
         ]);
     }
 
-    private function add(string $string, string $class)
-    {
-    }
 }
