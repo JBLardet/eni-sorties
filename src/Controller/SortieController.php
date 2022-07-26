@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Campus;
 use App\Entity\Sortie;
+use App\Form\AnnulationFormType;
 use App\Form\model\AnnulationFormModel;
 use App\Form\model\RechercheFormModel;
 use App\Form\RechercheFormType;
@@ -94,15 +95,23 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
     }
 
     /**
-     * @Route("/sortie/{id}/modifier", name="app_sortie_edit", methods={"GET", "POST"})
+     * @Route("/sortie/{id}/modifier", name="app_sortie_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function edit(Request $request, Sortie $sortie, SortieRepository $sortieRepository): Response
+    public function edit(Request $request, Sortie $sortie, SortieRepository $sortieRepository, EtatManager $etatManager, $id): Response
     {
+        $etatEnCreation = $etatManager->recupererEtats('EN CREATION');
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
+        $sortie = $sortieRepository->find($id);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($sortie->getEtat() === $etatEnCreation) {
             $sortieRepository->add($sortie, true);
+            $this->addFlash('success', 'La sortie a bien été modifiée !');
+            }
+            else {
+                $this->addFlash('error', 'La modification de la sortie a échoué ! Si le problème persiste, contactez un administrateur.');
+            }
 
             return $this->redirectToRoute('sorties_liste', [], Response::HTTP_SEE_OTHER);
         }
@@ -178,47 +187,47 @@ $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser()
         return $this->redirectToRoute('sorties_liste');
     }
 
-//    /**
-//     * @Route ("/annulerSortie/{id}", name="sortie_annulation", requirements={"id": "\d+"})
-//     */
-//    public function annulationSortie(Request $request, EntityManagerInterface $entityManager, SortieRepository $sortieRepository, EtatManager $etatManager, $id)
-//    {
-//        $etatOuverte = $etatManager->recupererEtats('OUVERTE');
-//        $etatCloturee = $etatManager->recupererEtats('CLOTUREE');
-//        $etatAnnulee = $etatManager->recupererEtats('ANNULEE');
-//        $annulation = new AnnulationFormModel();
-//        $sortie = $sortieRepository->find($id);
-//        $user = $this->getUser();
-//        $form = $this->createForm(AnnulationFormModel::class, $annulation);
-//        $form->handleRequest($request);
-//
-//        if ($form->isSubmitted() && $form->isValid()) {
-//                if ($sortie->getOrganisateur() === $user and ($sortie->getEtat() === $etatOuverte or $sortie->getEtat() === $etatCloturee )) {
-//                    //On concatene le motif d'annulation dans la description de la sortie
-//                    $motif = $form->getData('motif');
-//                    $infos = $sortie->getInfosSortie();
-//                    $infos = $infos.$motif;
-//                    $sortie->setInfosSortie($infos);
-//
-//                    //On passe la sortie à l'état annulée
-//                    $sortie->setEtat($etatAnnulee);
-//                    $entityManager->persist($sortie);
-//                    $entityManager->flush();
-//                    $this->addFlash('success', 'La sortie a bien été annulée !');
-//                } else {
-//                    $this->addFlash('error', 'Erreur : la sortie n\'a pas pu être annulée ! Veuillez contacter un administrateur');
-//                }
-//
-//            return $this->redirectToRoute('sorties_liste');
-//
-//
-//        }
-//
-//        return $this->renderForm('sortie/annulation.html.twig', [
-//            'annulation' => $annulation,
-//            'form' => $form,
-//        ]);
-//
-//
-//    }
+    /**
+     * @Route ("/annulerSortie/{id}", name="sortie_annulation", requirements={"id": "\d+"})
+     */
+    public function annulationSortie(Request $request, EntityManagerInterface $entityManager, SortieRepository $sortieRepository, EtatManager $etatManager, $id)
+    {
+        $etatOuverte = $etatManager->recupererEtats('OUVERTE');
+        $etatCloturee = $etatManager->recupererEtats('CLOTUREE');
+        $etatAnnulee = $etatManager->recupererEtats('ANNULEE');
+        $annulation = new AnnulationFormModel();
+        $sortie = $sortieRepository->find($id);
+        $user = $this->getUser();
+        $annulationForm = $this->createForm(AnnulationFormType::class, $annulation);
+        $annulationForm->handleRequest($request);
+
+        if ($annulationForm->isSubmitted() && $annulationForm->isValid()) {
+                if ($sortie->getOrganisateur() === $user and ($sortie->getEtat() === $etatOuverte or $sortie->getEtat() === $etatCloturee )) {
+                    //On concatene le motif d'annulation dans la description de la sortie
+                    $motif = $annulationForm->getData('motif');
+                    $infos = $sortie->getInfosSortie();
+                    $infos = $infos.$motif;
+                    $sortie->setInfosSortie($infos);
+
+                    //On passe la sortie à l'état annulée
+                    $sortie->setEtat($etatAnnulee);
+                    $entityManager->persist($sortie);
+                    $entityManager->flush();
+                    $this->addFlash('success', 'La sortie a bien été annulée !');
+                } else {
+                    $this->addFlash('error', 'Erreur : la sortie n\'a pas pu être annulée ! Veuillez contacter un administrateur');
+                }
+
+            return $this->redirectToRoute('sorties_liste');
+
+
+        }
+
+        return $this->renderForm('sortie/annulation.html.twig', [
+            'annulation' => $annulation,
+            'annulationForm' => $annulationForm,
+        ]);
+
+
+    }
 }
