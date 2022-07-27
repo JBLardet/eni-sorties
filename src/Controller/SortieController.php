@@ -30,16 +30,16 @@ class SortieController extends AbstractController
         $auto = $etatManager->modificationAutomatiqueEtats();
         dump($auto);
         $user = $this->getUser();
-        $campus = $this->getUser()->getCampus();
+        $campus = $user->getCampus();
         $rechercheModel = new RechercheFormModel();
         $rechercheModel->setCampus($campus);
 
         $form = $this->createForm(RechercheFormType::class, $rechercheModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
+            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $user);
         }else{
-            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
+            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $user);
         }
 
 
@@ -63,11 +63,12 @@ class SortieController extends AbstractController
         dump($sortie);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($form->get('enregistrer')->isSubmitted())
+            if ($form->get('enregistrer')->isClicked())
                 $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
 
-            if ($form->get('publier')->isSubmitted())
+            else if ($form->get('publier')->isClicked())
                 $sortie->setEtat($etatManager->recupererEtats('OUVERTE'));
+            //todo: Un else() qui envoie un message d'erreur et redirige vers la page principale, ce serait juste pour faire propre dans le code.
 
 
             $sortie->setOrganisateur($this->getUser());
@@ -206,9 +207,11 @@ class SortieController extends AbstractController
         if ($annulationForm->isSubmitted() && $annulationForm->isValid()) {
                 if ($sortie->getOrganisateur() === $user and ($sortie->getEtat() === $etatOuverte or $sortie->getEtat() === $etatCloturee )) {
                     //On concatene le motif d'annulation dans la description de la sortie
-                    $motif = $annulationForm->getData('motif');
+                    $motif = $annulation->getMotif();
+                    dump($motif);
                     $infos = $sortie->getInfosSortie();
-                    $infos = $infos.$motif;
+                    dump($infos);
+                    $infos = "".$infos ."  --------ATTENTION CETTE SORTIE EST ANNULEE !!--------  MOTIF : " .$motif;
                     $sortie->setInfosSortie($infos);
 
                     //On passe la sortie à l'état annulée

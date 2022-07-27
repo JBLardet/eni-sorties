@@ -34,7 +34,7 @@
         </tbody>
     </table>
 
-    {% if app.user.id==user.id and app.user.id==42 -%}
+    {% if app.user.id==user.id or is_granted("ROLE_ADMIN") %}
         <a href="{{ path('user_edit', {'id': user.id}) }}"><button class="btn enligne" value="Modifier le profil">Modifier le profil</button></a>
     {% endif %}
     {% if is_granted("ROLE_ADMIN") %}

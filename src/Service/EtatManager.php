@@ -8,14 +8,15 @@ use App\Entity\Etat;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use DateInterval;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EtatManager
 {
 
-    private $entityManager;
-    private $etatRepository;
-    private $sortieRepository;
+    private EntityManager $entityManager;
+    private EtatRepository $etatRepository;
+    private SortieRepository $sortieRepository;
 
 
     public function __construct(EntityManagerInterface $entityManager, EtatRepository $etatRepository, SortieRepository $sortieRepository)
@@ -27,7 +28,7 @@ class EtatManager
 
     public function recupererEtats(String $e): Etat
     {
-
+        $monEtat = null;
         $etats = $this->etatRepository->findAll();
 
         foreach($etats as $etat) {
@@ -48,6 +49,9 @@ class EtatManager
 
         foreach($etats as $etat) {
 
+            if ($etat->getLibelle() == 'OUVERTE') {
+                $etatOuverte = $etat;
+            }
             if ($etat->getLibelle() == 'CLOTUREE') {
                 $etatCloturee = $etat;
             }
@@ -60,9 +64,12 @@ class EtatManager
             if ($etat->getLibelle() == 'HISTORISEE') {
                 $etatHistorisee = $etat;
             }
-            dump($etat);
         }
 
+
+            $now = new \DateTime();
+            $now->modify('+ 2 hours');
+            dump($now);
 
 
         foreach ($sorties as $sortie) {
@@ -74,31 +81,35 @@ class EtatManager
 
 
             //passage etat -> historisée
-            if('now' > $dateSortieAHistoriser)
+            if($now > $dateSortieAHistoriser)
             {
                 $sortie->setEtat($etatHistorisee);
-            }
 
-            //passage etat -> terminee
-            if('now' > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
-            {
+            } elseif ($now > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {   //passage etat -> terminee
                 $sortie->setEtat($etatTerminee);
-            }
-
-            //passage etat -> en cours
-            if($sortie->getDateHeureDebut()< 'now' and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
-            {
+            } elseif ($sortie->getDateHeureDebut()< $now and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {   //passage etat -> en cours
                 $sortie->setEtat($etatEnCours);
-            }
+            } elseif ($now > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
 
-            //passage etat -> cloturee
-            if('now' > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
             {
                 $sortie->setEtat($etatCloturee);
+            }elseif ($now < $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            {
+                $sortie->setEtat($etatOuverte);
             }
 
+//            dump($sortie);
+//            dump($now > $dateHeureFinSortie);
+//            dump($sortie->getEtat()->getLibelle() !== 'ANNULEE');
+
+            $this->entityManager->persist($sortie);
 
         }
+
+        $this->entityManager->flush();
+
         return true;
     }
 
