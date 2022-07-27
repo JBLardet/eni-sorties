@@ -10,6 +10,13 @@ tbody{
 }
 th{
     color:#fff;
+    font-size: medium;
+}
+h1, h2, h3{
+    display:block;
+}
+h1{
+    color: greenyellow;
 }
 
 a {
@@ -31,10 +38,25 @@ header {
 }
 
 header img {
-    height: 200px;
+    height: 50%;
 }
 header a{
     color:#fff;
+}
+.photo{
+    max-width: 200px;
+    border-radius: 6px;
+}
+
+@media only screen and (max-width: 800px) {
+    img.photo {
+        display: flex;
+        position:relative;
+        top:5px;
+        left: 120px;
+        width:30%;
+        border-radius: 6px;
+    }
 }
 
 .bg-turquoise{
@@ -64,12 +86,16 @@ body {
 }
 
 main{
-    display: block;
-    width: 70%;
     border-radius: 10px;
     border-style: solid;
-    border-color: greenyellow;
+    border-color: deepskyblue;
     padding: 15px;
+    width:90%;
+}
+.center {
+    margin: auto;
+    width: 70%;
+    padding: 10px;
 }
 
 footer {
@@ -103,13 +129,24 @@ footer {
 /*    border-radius: 50%;*/
 /*}*/
 
-
-input {
+form{
+    font-size: medium;
+}
+input{
     display: block;
-    width: 20%;
+    border-radius: 6px;
 }
 button{
     color:#fff;
+    border-radius: 6px;
+}
+select{
+    color:#000;
+    border-radius: 6px;
+}
+file{
+    color:#000;
+    border-radius: 6px;
 }
 .enligne{
     display:inline;

@@ -8,14 +8,15 @@ use App\Entity\Etat;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use DateInterval;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EtatManager
 {
 
-    private $entityManager;
-    private $etatRepository;
-    private $sortieRepository;
+    private EntityManager $entityManager;
+    private EtatRepository $etatRepository;
+    private SortieRepository $sortieRepository;
 
 
     public function __construct(EntityManagerInterface $entityManager, EtatRepository $etatRepository, SortieRepository $sortieRepository)
@@ -27,7 +28,7 @@ class EtatManager
 
     public function recupererEtats(String $e): Etat
     {
-
+        $monEtat = null;
         $etats = $this->etatRepository->findAll();
 
         foreach($etats as $etat) {
@@ -65,9 +66,11 @@ class EtatManager
             }
         }
 
+
             $now = new \DateTime();
             $now->modify('+ 2 hours');
-        dump($now);
+            dump($now);
+
 
         foreach ($sorties as $sortie) {
             $dateHeureFinSortie = clone $sortie->getDateHeureDebut();
@@ -77,11 +80,11 @@ class EtatManager
             $dateSortieAHistoriser->modify('+ 1 month');
 
 
-
             //passage etat -> historisée
             if($now > $dateSortieAHistoriser)
             {
                 $sortie->setEtat($etatHistorisee);
+
             } elseif ($now > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
             {   //passage etat -> terminee
                 $sortie->setEtat($etatTerminee);
@@ -89,6 +92,7 @@ class EtatManager
             {   //passage etat -> en cours
                 $sortie->setEtat($etatEnCours);
             } elseif ($now > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+
             {
                 $sortie->setEtat($etatCloturee);
             }elseif ($now < $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')

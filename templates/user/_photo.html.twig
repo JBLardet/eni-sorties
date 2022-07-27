@@ -1,0 +1,9 @@
+<div class="position-relative">
+    <div class="position-absolute top-0 end-0" style="">
+        {% if(user.photo) %}
+        <img class="photo float-right" src="{{ asset("media/photos/"~user.photo)}}" alt="photo utilisateur">
+        {% else %}
+        <img class="photo float-right" src="{{ asset("media/photos/anonyme.jpg")}}" alt="pas de photo utilisateur">
+        {% endif %}
+    </div>
+</div>
