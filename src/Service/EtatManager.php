@@ -8,14 +8,15 @@ use App\Entity\Etat;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use DateInterval;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EtatManager
 {
 
-    private $entityManager;
-    private $etatRepository;
-    private $sortieRepository;
+    private EntityManager $entityManager;
+    private EtatRepository $etatRepository;
+    private SortieRepository $sortieRepository;
 
 
     public function __construct(EntityManagerInterface $entityManager, EtatRepository $etatRepository, SortieRepository $sortieRepository)
@@ -27,7 +28,7 @@ class EtatManager
 
     public function recupererEtats(String $e): Etat
     {
-
+        $monEtat = null;
         $etats = $this->etatRepository->findAll();
 
         foreach($etats as $etat) {
@@ -60,10 +61,9 @@ class EtatManager
             if ($etat->getLibelle() == 'HISTORISEE') {
                 $etatHistorisee = $etat;
             }
-            dump($etat);
         }
 
-
+        $now = new \DateTime();
 
         foreach ($sorties as $sortie) {
             $dateHeureFinSortie = clone $sortie->getDateHeureDebut();
@@ -72,27 +72,26 @@ class EtatManager
             $dateSortieAHistoriser = clone $sortie->getDateHeureDebut();
             $dateSortieAHistoriser->modify('+ 1 month');
 
-
             //passage etat -> historisée
-            if('now' > $dateSortieAHistoriser)
+            if($now > $dateSortieAHistoriser)
             {
                 $sortie->setEtat($etatHistorisee);
             }
 
             //passage etat -> terminee
-            if('now' > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            if($now > $dateHeureFinSortie and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
             {
                 $sortie->setEtat($etatTerminee);
             }
 
             //passage etat -> en cours
-            if($sortie->getDateHeureDebut()< 'now' and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            if($sortie->getDateHeureDebut()< $now and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
             {
                 $sortie->setEtat($etatEnCours);
             }
 
             //passage etat -> cloturee
-            if('now' > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
+            if($now > $sortie->getDateLimiteInscription() and $sortie->getEtat()->getLibelle() !== 'ANNULEE')
             {
                 $sortie->setEtat($etatCloturee);
             }
