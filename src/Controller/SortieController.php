@@ -63,11 +63,12 @@ class SortieController extends AbstractController
         dump($sortie);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($form->get('enregistrer')->isSubmitted())
+            if ($form->get('enregistrer')->isClicked())
                 $sortie->setEtat($etatManager->recupererEtats('EN CREATION'));
 
-            if ($form->get('publier')->isSubmitted())
+            else if ($form->get('publier')->isClicked())
                 $sortie->setEtat($etatManager->recupererEtats('OUVERTE'));
+            //todo: Un else() qui envoie un message d'erreur et redirige vers la page principale, ce serait juste pour faire propre dans le code.
 
 
             $sortie->setOrganisateur($this->getUser());
