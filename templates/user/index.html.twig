@@ -24,7 +24,7 @@
             <tr>
                 <td>{{ user.id }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>{{ user.roles ? user.roles|json_encode|replace({'["ROLE_': '','"]':''}) }}</td>
                 <td>{{ user.pseudo }}</td>
                 <td>{{ user.nom }}</td>
                 <td>{{ user.prenom }}</td>
@@ -37,7 +37,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="10">no records found</td>
+                <td colspan="10">Aucun utilisateur n'est enregistré pour le moment !</td>
             </tr>
         {% endfor %}
         </tbody>
