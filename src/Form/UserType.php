@@ -9,8 +9,10 @@ use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class UserType extends AbstractType
 {
@@ -30,7 +32,7 @@ class UserType extends AbstractType
 //            ->add('actif', CheckboxType::class)
 
             ->add('campus', EntityType::class, [
-               'label' => 'campus :',
+               'label' => 'Campus :',
                 'class' => Campus::class,
 //                'query_builder' => function (LieuRepository $lieuRepository) {
 //                    return $lieuRepository->createQueryBuilder('lieu')
@@ -38,7 +40,19 @@ class UserType extends AbstractType
 //                },
                 'choice_label' => 'nom'
            ])
-        ;
+            ->add('photo',FileType::class, [
+                'label' => 'Photo (jpg/gif/png max 2Mo)',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize'=>'2M',
+                        'mimeTypes' => ['image/*'],
+                        'mimeTypesMessage' => 'Le fichier est invalide. Veuillez télécharger une photo au format .jpg ou .jpeg de moins de 2Mo'
+                    ])
+                ],
+
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

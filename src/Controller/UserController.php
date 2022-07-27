@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 
 class UserController extends AbstractController
@@ -86,13 +87,39 @@ class UserController extends AbstractController
     /**
      * @Route("/user/{id}/edit", name="user_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, User $user, UserRepository $userRepository): Response
+    public function edit(Request $request, User $user, UserRepository $userRepository,SluggerInterface $slugger): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var UploadedFile $photoFile */
+            $photoFile = $form->get('photo')->getData();
+
+            if ($photoFile) {
+
+                $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
+
+                // Move the file to the directory where photos are stored
+                try {
+                    $photoFile->move(
+                        $this->getParameter('images_dir'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+
+                // updates the 'photoFilename' property to store the JPG file name
+                // instead of its contents
+                $user->setPhoto($newFilename);
+            }
+
             $userRepository->add($user, true);
 
             return $this->redirectToRoute('user_show', [
