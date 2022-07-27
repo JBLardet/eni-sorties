@@ -30,16 +30,16 @@ class SortieController extends AbstractController
         $auto = $etatManager->modificationAutomatiqueEtats();
         dump($auto);
         $user = $this->getUser();
-        $campus = $this->getUser()->getCampus();
+        $campus = $user->getCampus();
         $rechercheModel = new RechercheFormModel();
         $rechercheModel->setCampus($campus);
 
         $form = $this->createForm(RechercheFormType::class, $rechercheModel);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
+            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $user);
         }else{
-            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $this->getUser());
+            $sorties = $sortieRepository->findByFormulaire($rechercheModel, $user);
         }
 
 
