@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormTypeInterface;
 
 class AnnulationFormModel
 {
-    public $motif;
+    public String $motif;
 
     /**
      * @return mixed

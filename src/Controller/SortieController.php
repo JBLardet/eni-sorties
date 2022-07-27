@@ -207,9 +207,11 @@ class SortieController extends AbstractController
         if ($annulationForm->isSubmitted() && $annulationForm->isValid()) {
                 if ($sortie->getOrganisateur() === $user and ($sortie->getEtat() === $etatOuverte or $sortie->getEtat() === $etatCloturee )) {
                     //On concatene le motif d'annulation dans la description de la sortie
-                    $motif = $annulationForm->getData('motif');
+                    $motif = $annulation->getMotif();
+                    dump($motif);
                     $infos = $sortie->getInfosSortie();
-                    $infos = $infos.$motif;
+                    dump($infos);
+                    $infos = "".$infos ."  --------ATTENTION CETTE SORTIE EST ANNULEE !!--------  MOTIF : " .$motif;
                     $sortie->setInfosSortie($infos);
 
                     //On passe la sortie à l'état annulée

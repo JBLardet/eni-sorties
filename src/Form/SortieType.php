@@ -124,6 +124,7 @@ class SortieType extends AbstractType
             ])
             ->add('enregistrer', SubmitType::class, [
                 'label' => 'Enregistrer',
+
                 'attr' => [
                 'class' => 'btn'
                 ]
@@ -133,6 +134,7 @@ class SortieType extends AbstractType
                 'attr' => [
                 'class' => 'btn'
                 ]
+
             ]);
     }
 
