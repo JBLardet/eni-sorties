@@ -25,7 +25,7 @@ class SortieController extends AbstractController
     /**
      * @Route("/", name="sorties_liste", methods={"GET", "POST"})
      */
-    public function liste(EntityManagerInterface $entityManager, SortieRepository $sortieRepository, Request $request, EtatManager $etatManager): Response
+    public function liste(SortieRepository $sortieRepository, Request $request, EtatManager $etatManager): Response
     {
         $auto = $etatManager->modificationAutomatiqueEtats();
         dump($auto);
@@ -54,7 +54,7 @@ class SortieController extends AbstractController
     /**
      * @Route("/NouvelleSortie", name="sortie_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, SortieRepository $sortieRepository, EtatManager $etatManager, EtatRepository $etatRepository): Response
+    public function new(Request $request, SortieRepository $sortieRepository, EtatManager $etatManager): Response
     {
         $sortie = new Sortie();
         $form = $this->createForm(SortieType::class, $sortie);
